@@ -1,0 +1,46 @@
+/* By Athlon Front-End Team */
+
+/* Core variables */
+@import 'base/vars';
+
+/* CSS Reset */
+@import 'base/reset';
+
+/* CSS print */
+@import 'base/print';
+
+/* Fonts */
+@import 'base/fonts';
+
+/* Mixins, helpers and functions */
+@import 'base/mixins';
+
+/* Vendor */
+
+/* Components */
+
+/* Browser specific styles */
+@import 'dirty/hacks';
+
+@import 'odometer';
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100vh;
+  width: 100vw;
+  background: linear-gradient(
+    336deg,
+    rgba(155, 183, 255, 1) 0%,
+    rgba(255, 144, 144, 1) 44%,
+    rgba(228, 255, 240, 1) 100%
+  );
+  font-size: 100px;
+}
+
+.distance {
+  position: fixed;
+  top: 10px;
+  left: 10px;
+}
