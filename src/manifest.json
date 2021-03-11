@@ -4,20 +4,18 @@
   "manifest_version": 2,
   "description": "How far will ya go!?!",
   "homepage_url": "http://www.redundantrobot.com",
-  "background": {
-    "scripts": ["./js/app.js"],
-    "persistent": true
-  },
+  "web_accessible_resources": ["./js/app.js", "./js/background.js"],
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["./js/app.js", "./js/background.js"],
+      "run_at": "document_end",
+      "all_frames": true
+    }
+  ],
   "browser_action": {
     "default_title": "Mouse Odometer!",
     "default_popup": "options.html"
-  },
-
-  "applications": {
-    "gecko": {
-      "id": "travis.lawrence12@gmail.com",
-      "strict_min_version": "54.0"
-    }
   },
 
   "options_ui": {
@@ -25,5 +23,5 @@
     "open_in_tab": false
   },
 
-  "permissions": ["https://*/*", "http://*/*", "tabs"]
+  "permissions": ["activeTab"]
 }
