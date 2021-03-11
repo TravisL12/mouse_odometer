@@ -12,16 +12,20 @@ const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 
 const environment = require('./configuration/environment');
 
-const templateFiles = fs.readdirSync(environment.paths.source)
+const templateFiles = fs
+  .readdirSync(environment.paths.source)
   .filter((file) => path.extname(file).toLowerCase() === '.html');
 
-const htmlPluginEntries = templateFiles.map((template) => new HTMLWebpackPlugin({
-  inject: true,
-  hash: false,
-  filename: template,
-  template: path.resolve(environment.paths.source, template),
-  favicon: path.resolve(environment.paths.source, 'images', 'favicon.ico'),
-}));
+const htmlPluginEntries = templateFiles.map(
+  (template) =>
+    new HTMLWebpackPlugin({
+      inject: true,
+      hash: false,
+      filename: template,
+      template: path.resolve(environment.paths.source, template),
+      favicon: path.resolve(environment.paths.source, 'images', 'favicon.ico'),
+    })
+);
 
 module.exports = {
   entry: {
@@ -35,7 +39,12 @@ module.exports = {
     rules: [
       {
         test: /\.((c|sa|sc)ss)$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader', 'postcss-loader', 'sass-loader'],
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          'postcss-loader',
+          'sass-loader',
+        ],
       },
       {
         test: /\.js$/,
@@ -102,6 +111,10 @@ module.exports = {
     }),
     new CopyWebpackPlugin({
       patterns: [
+        {
+          from: path.resolve(environment.paths.source, 'manifest.json'),
+          to: path.resolve(environment.paths.output),
+        },
         {
           from: path.resolve(environment.paths.source, 'images', 'content'),
           to: path.resolve(environment.paths.output, 'images', 'content'),
