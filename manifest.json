@@ -1,0 +1,32 @@
+{
+  "name": "Mouse Odometer",
+  "version": "0.0.1",
+  "manifest_version": 2,
+  "description": "How far will ya go!?!",
+  "homepage_url": "http://www.redundantrobot.com",
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": [
+        "./public/scripts/background.js",
+        "./public/scripts/application.js",
+        "./public/scripts/odometer.min.js"
+      ],
+      "css": [
+        "./public/styles/odometer-theme-default.css",
+        "./public/styles/styles.css"
+      ]
+    }
+  ],
+  "browser_action": {
+    "default_title": "Mouse Odometer!",
+    "default_popup": "options.html"
+  },
+
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": false
+  },
+
+  "permissions": ["activeTab"]
+}
