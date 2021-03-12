@@ -9,8 +9,8 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
-  "type": "git",
-  "url": "git+https://github.com/jazzbrotha/webpack-simple-boilerplate.git"
+    "type": "git",
+    "url": "git+https://github.com/jazzbrotha/webpack-simple-boilerplate.git"
   },
   "keywords": [
     "webpack",
@@ -37,5 +37,9 @@
     "style-loader": "^0.16.1",
     "webpack": "^1.14.0",
     "webpack-dev-server": "^1.16.2"
+  },
+  "dependencies": {
+    "lodash": "^4.17.21",
+    "odometer": "^0.4.8"
   }
 }

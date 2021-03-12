@@ -1,5 +1,5 @@
-import '../scss/app.scss';
+import '../scss/main.scss';
 
 import MouseOdometer from './mouseOdometer.js';
-console.log('LOADING UP THE MOUSE!!!!!');
+
 new MouseOdometer();
