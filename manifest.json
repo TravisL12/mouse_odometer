@@ -6,7 +6,9 @@
   "homepage_url": "http://www.redundantrobot.com",
   "web_accessible_resources": [
     "public/scripts/odometer.min.js",
-    "public/scripts/application.js"
+    "public/scripts/application.js",
+    "public/styles/odometer-theme-default.css",
+    "public/styles/styles.css"
   ],
   "content_scripts": [
     {
