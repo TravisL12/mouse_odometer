@@ -4,17 +4,17 @@
   "manifest_version": 2,
   "description": "How far will ya go!?!",
   "homepage_url": "http://www.redundantrobot.com",
+  "web_accessible_resources": [
+    "public/scripts/odometer.min.js",
+    "public/scripts/application.js"
+  ],
   "content_scripts": [
     {
-      "matches": ["http://*/*", "https://*/*"],
-      "js": [
-        "./public/scripts/background.js",
-        "./public/scripts/odometer.min.js",
-        "./public/scripts/application.js"
-      ],
+      "matches": ["<all_urls>"],
+      "js": ["public/scripts/odometer.min.js", "public/scripts/application.js"],
       "css": [
-        "./public/styles/odometer-theme-default.css",
-        "./public/styles/styles.css"
+        "public/styles/odometer-theme-default.css",
+        "public/styles/styles.css"
       ]
     }
   ],
