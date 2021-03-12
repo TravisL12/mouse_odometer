@@ -1,9 +1,4 @@
-body {
-  margin: 0;
-  font-family: helvetica;
-}
-
-.container {
+/* .container {
   display: flex;
   justify-content: center;
   align-items: center;
@@ -16,10 +11,12 @@ body {
     rgba(228, 255, 240, 1) 100%
   );
   font-size: 100px;
-}
+} */
 
-.distance {
+.mouse-odometer-distance {
   position: fixed;
   top: 10px;
   left: 10px;
+  z-index: 1000;
+  color: black;
 }

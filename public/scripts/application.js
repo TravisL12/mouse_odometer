@@ -19,7 +19,7 @@ function throttle(callback, delay) {
 class MouseOdometer {
   constructor(delay = THROTTLE_DELAY) {
     const odomWrapper = document.createElement('div');
-    odomWrapper.classList = 'distance';
+    odomWrapper.classList = 'mouse-odometer-distance';
     const odomTarget = document.createElement('div');
     odomWrapper.appendChild(odomTarget);
     document.body.appendChild(odomWrapper);
