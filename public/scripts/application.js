@@ -23,10 +23,6 @@ const throttle = (func, limit) => {
   };
 };
 
-const updateStorage = (distance) => {
-  chrome.storage.sync.set({ distance });
-};
-
 class MouseOdometer {
   constructor(delay = THROTTLE_DELAY) {
     const odomWrapper = document.createElement('div');
@@ -34,22 +30,21 @@ class MouseOdometer {
     const odomTarget = document.createElement('div');
     odomWrapper.appendChild(odomTarget);
     document.body.appendChild(odomWrapper);
-    this.throttledUpdate = throttle(updateStorage, STORAGE_UPDATE_DELAY);
-    chrome.storage.sync.get(['distance'], (options) => {
-      this.distance = +options.distance || 0;
 
-      this.od = new Odometer({
-        el: odomTarget,
-        value: this.distance,
-        format: ',ddd',
-        theme: 'default',
-      });
-      this.lastMove = { x: null, y: null };
-      document.body.addEventListener(
-        'mousemove',
-        throttle(this.updateMove, delay).bind(this)
-      );
+    this.currentMove = 0;
+    this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
+
+    this.od = new Odometer({
+      el: odomTarget,
+      value: this.currentMove,
+      format: ',ddd',
+      theme: 'default',
     });
+    this.lastMove = { x: null, y: null };
+    document.body.addEventListener(
+      'mousemove',
+      throttle(this.updateMove, delay).bind(this)
+    );
   }
 
   updateMove(event) {
@@ -63,14 +58,19 @@ class MouseOdometer {
     if (!!oldX && !!oldY) {
       const dx = Math.abs(oldX - newX);
       const dy = Math.abs(oldY - newY);
-      this.distance += Math.sqrt(dx ** 2 + dy ** 2);
+      this.currentMove += Math.sqrt(dx ** 2 + dy ** 2);
       this.updateOdometer();
     }
   }
 
   updateOdometer() {
-    this.throttledUpdate(this.distance);
-    this.od.update(Math.round(this.distance));
+    this.throttledUpdate();
+    this.od.update(Math.round(this.currentMove));
+  }
+
+  updateStorage() {
+    chrome.runtime.sendMessage({ lastMove: this.currentMove });
+    this.currentMove = 0;
   }
 }
 

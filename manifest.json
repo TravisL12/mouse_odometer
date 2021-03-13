@@ -10,6 +10,10 @@
     "public/styles/odometer-theme-default.css",
     "public/styles/styles.css"
   ],
+  "background": {
+    "scripts": ["public/scripts/background.js"],
+    "persistent": true
+  },
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
