@@ -1,23 +1,30 @@
-const THROTTLE_DELAY = 250;
-function throttle(callback, delay) {
-  let canFireCallback = true;
+const THROTTLE_DELAY = 500;
+const STORAGE_UPDATE_DELAY = 3000;
 
+// https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
+const throttle = (func, limit) => {
+  let lastFunc;
+  let lastRan;
   return function () {
-    setTimeout(() => {
-      canFireCallback = true;
-    }, delay);
-
-    if (canFireCallback) {
-      canFireCallback = false;
-      return callback.apply(this, Object.values(arguments));
+    const context = this;
+    const args = arguments;
+    if (!lastRan) {
+      func.apply(context, args);
+      lastRan = Date.now();
+    } else {
+      clearTimeout(lastFunc);
+      lastFunc = setTimeout(function () {
+        if (Date.now() - lastRan >= limit) {
+          func.apply(context, args);
+          lastRan = Date.now();
+        }
+      }, limit - (Date.now() - lastRan));
     }
-
-    return;
   };
-}
+};
 
-const sendMessage = (value) => {
-  chrome.runtime.sendMessage(value);
+const updateStorage = (distance) => {
+  chrome.storage.sync.set({ distance });
 };
 
 class MouseOdometer {
@@ -27,19 +34,22 @@ class MouseOdometer {
     const odomTarget = document.createElement('div');
     odomWrapper.appendChild(odomTarget);
     document.body.appendChild(odomWrapper);
-    this.distance = 0;
-    this.od = new Odometer({
-      el: odomTarget,
-      value: this.distance,
-      format: ',ddd',
-      theme: 'default',
+    this.throttledUpdate = throttle(updateStorage, STORAGE_UPDATE_DELAY);
+    chrome.storage.sync.get(['distance'], (options) => {
+      this.distance = +options.distance || 0;
+
+      this.od = new Odometer({
+        el: odomTarget,
+        value: this.distance,
+        format: ',ddd',
+        theme: 'default',
+      });
+      this.lastMove = { x: null, y: null };
+      document.body.addEventListener(
+        'mousemove',
+        throttle(this.updateMove, delay).bind(this)
+      );
     });
-    this.lastMove = { x: null, y: null };
-    this.updateOdometer();
-    document.body.addEventListener(
-      'mousemove',
-      throttle(this.updateMove, delay).bind(this)
-    );
   }
 
   updateMove(event) {
@@ -59,9 +69,8 @@ class MouseOdometer {
   }
 
   updateOdometer() {
-    const roundedDistance = Math.round(this.distance);
-    sendMessage({ distance: roundedDistance });
-    this.od.update(roundedDistance);
+    this.throttledUpdate(this.distance);
+    this.od.update(Math.round(this.distance));
   }
 }
 
