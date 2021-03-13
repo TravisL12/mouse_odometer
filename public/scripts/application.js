@@ -16,6 +16,10 @@ function throttle(callback, delay) {
   };
 }
 
+const sendMessage = (value) => {
+  chrome.runtime.sendMessage(value);
+};
+
 class MouseOdometer {
   constructor(delay = THROTTLE_DELAY) {
     const odomWrapper = document.createElement('div');
@@ -55,7 +59,9 @@ class MouseOdometer {
   }
 
   updateOdometer() {
-    this.od.update(Math.round(this.distance));
+    const roundedDistance = Math.round(this.distance);
+    sendMessage({ distance: roundedDistance });
+    this.od.update(roundedDistance);
   }
 }
 
