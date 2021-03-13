@@ -1,4 +1,4 @@
-const THROTTLE_DELAY = 500;
+const THROTTLE_DELAY = 250;
 const STORAGE_UPDATE_DELAY = 3000;
 
 // https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
@@ -33,14 +33,13 @@ class MouseOdometer {
 
     this.currentMove = 0;
     this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
-
+    this.lastMove = { x: 0, y: 0 };
     this.od = new Odometer({
       el: odomTarget,
       value: this.currentMove,
       format: ',ddd',
       theme: 'default',
     });
-    this.lastMove = { x: null, y: null };
     document.body.addEventListener(
       'mousemove',
       throttle(this.updateMove, delay).bind(this)
@@ -48,24 +47,16 @@ class MouseOdometer {
   }
 
   updateMove(event) {
-    const { pageX: x, pageY: y } = event;
-    this.calculateOdometer(x, y);
-    this.lastMove = { x, y };
-  }
-
-  calculateOdometer(newX, newY) {
-    const { x: oldX, y: oldY } = this.lastMove;
-    if (!!oldX && !!oldY) {
-      const dx = Math.abs(oldX - newX);
-      const dy = Math.abs(oldY - newY);
+    const { pageX, pageY } = event;
+    const { x, y } = this.lastMove;
+    if (!!x && !!y) {
+      const dx = Math.abs(x - pageX);
+      const dy = Math.abs(y - pageY);
       this.currentMove += Math.sqrt(dx ** 2 + dy ** 2);
-      this.updateOdometer();
+      this.throttledUpdate();
+      this.od.update(Math.round(this.currentMove));
     }
-  }
-
-  updateOdometer() {
-    this.throttledUpdate();
-    this.od.update(Math.round(this.currentMove));
+    this.lastMove = { x: pageX, y: pageY };
   }
 
   updateStorage() {
