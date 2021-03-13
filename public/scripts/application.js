@@ -25,17 +25,11 @@ const throttle = (func, limit) => {
 
 class MouseOdometer {
   constructor(delay = THROTTLE_DELAY) {
-    const odomWrapper = document.createElement('div');
-    odomWrapper.classList = 'mouse-odometer-distance';
-    const odomTarget = document.createElement('div');
-    odomWrapper.appendChild(odomTarget);
-    document.body.appendChild(odomWrapper);
-
     this.currentMove = 0;
     this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
     this.lastMove = { x: 0, y: 0 };
     this.od = new Odometer({
-      el: odomTarget,
+      el: this.initWrapper(),
       value: this.currentMove,
       format: ',ddd',
       theme: 'default',
@@ -44,6 +38,15 @@ class MouseOdometer {
       'mousemove',
       throttle(this.updateMove, delay).bind(this)
     );
+  }
+
+  initWrapper() {
+    const odomWrapper = document.createElement('div');
+    odomWrapper.classList = 'mouse-odometer-distance';
+    const odomTarget = document.createElement('div');
+    odomWrapper.appendChild(odomTarget);
+    document.body.appendChild(odomWrapper);
+    return odomTarget;
   }
 
   updateMove(event) {
