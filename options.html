@@ -5,10 +5,17 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Options</title>
+    <style>
+      .title {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+      }
+    </style>
   </head>
   <body>
-    <p>&#128045; Odometer!</p>
-    <div id="distance"></div>
+    <div class="title"><span>&#128045;</span><span>Odometer!</span></div>
+    <p id="distance"></p>
   </body>
   <script src="public/scripts/options.js"></script>
 </html>
