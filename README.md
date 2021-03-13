@@ -1,4 +1,8 @@
-# Squeak!
+# Mouse Odometer
+
+##### Squeak! - Keep track of how many pixels your mouse travels!
+
+## Setup locally
 
 Load up extension in Chrome. Go to `chrome://extensions/` or just find the "Manage Extensions" link from the plugins menu bar icon.
 
