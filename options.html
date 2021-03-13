@@ -4,19 +4,20 @@
     <meta charset="UTF-8" />
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="public/styles/styles.css" />
     <title>Options</title>
-    <style>
-      .title {
-        display: flex;
-        gap: 10px;
-        align-items: center;
-      }
-    </style>
   </head>
   <body>
-    <div class="title"><span>&#128045;</span><span>Odometer!</span></div>
-    <p id="distance"></p>
-    <button id="reset">Reset</button>
+    <div class="mouse-odometer-options-container">
+      <div class="box title">
+        <span>&#128045;</span>
+        <span>Odometer!</span>
+      </div>
+      <div class="box amount">
+        <span id="distance"></span>
+        <a id="reset">Reset</a>
+      </div>
+    </div>
   </body>
   <script src="public/scripts/options.js"></script>
 </html>
