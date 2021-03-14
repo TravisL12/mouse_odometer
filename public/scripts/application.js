@@ -43,6 +43,7 @@ class MouseOdometer {
     chrome.storage.onChanged.addListener((changes) => {
       if (changes.showOdometer?.newValue) {
         this.initWrapper();
+        this.syncDistance();
       } else if (
         this.odometer &&
         changes.showOdometer &&
