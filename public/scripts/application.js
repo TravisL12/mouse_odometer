@@ -36,14 +36,12 @@ class MouseOdometer {
     chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
       if (options.showOdometer) {
         this.initWrapper();
-        this.syncDistance();
       }
     });
 
     chrome.storage.onChanged.addListener((changes) => {
       if (changes.showOdometer?.newValue) {
         this.initWrapper();
-        this.syncDistance();
       } else if (
         this.odometer &&
         changes.showOdometer &&
@@ -61,21 +59,23 @@ class MouseOdometer {
     const odomTarget = document.createElement('div');
     this.odometerWrapper.appendChild(odomTarget);
     document.body.appendChild(this.odometerWrapper);
-
     this.odometer = new Odometer({
       el: odomTarget,
       value: 0,
       format: ',ddd',
       theme: 'default',
     });
+    this.syncDistance();
   }
 
   syncDistance() {
-    chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
-      if (options.showOdometer) {
-        this.odometer.update(Math.round(options.distance));
-      }
-    });
+    if (this.odometerWrapper) {
+      chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
+        if (options.showOdometer) {
+          this.odometer.update(Math.round(options.distance));
+        }
+      });
+    }
   }
 
   updateMove(event) {
