@@ -48,18 +48,18 @@ class MouseOdometer {
         changes.showOdometer &&
         !changes.showOdometer.newValue
       ) {
-        this.od.el.remove();
+        this.odometerWrapper.remove();
         delete this.od;
       }
     });
   }
 
   initWrapper() {
-    const odomWrapper = document.createElement('div');
-    odomWrapper.classList = 'mouse-odometer-distance';
+    this.odometerWrapper = document.createElement('div');
+    this.odometerWrapper.classList = 'mouse-odometer-distance';
     const odomTarget = document.createElement('div');
-    odomWrapper.appendChild(odomTarget);
-    document.body.appendChild(odomWrapper);
+    this.odometerWrapper.appendChild(odomTarget);
+    document.body.appendChild(this.odometerWrapper);
 
     this.od = new Odometer({
       el: odomTarget,
