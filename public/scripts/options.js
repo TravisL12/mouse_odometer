@@ -15,8 +15,8 @@ showOdometerOption.addEventListener('change', (event) => {
 });
 
 const updateDistance = () => {
-  chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
-    const amount = Math.round(options.distance || 0).toLocaleString();
+  chrome.storage.sync.get(['currentDistance', 'showOdometer'], (options) => {
+    const amount = Math.round(options.currentDistance || 0).toLocaleString();
     setDistanceDisplay(amount);
     showOdometerOption.checked = options.showOdometer || false;
   });
@@ -24,7 +24,7 @@ const updateDistance = () => {
 
 reset.addEventListener('click', (event) => {
   event.preventDefault();
-  setStorage({ distance: 0 });
+  setStorage({ currentDistance: 0 });
   setDistanceDisplay(0);
 });
 

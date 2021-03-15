@@ -24,7 +24,7 @@ const throttle = (func, limit) => {
 };
 
 const getStorage = (cb) => {
-  chrome.storage.sync.get(['distance', 'showOdometer'], cb);
+  chrome.storage.sync.get(['currentDistance', 'showOdometer'], cb);
 };
 
 class MouseOdometer {
@@ -76,7 +76,7 @@ class MouseOdometer {
     if (this.odometerWrapper) {
       getStorage((options) => {
         if (options.showOdometer) {
-          this.odometer.update(Math.round(options.distance));
+          this.odometer.update(Math.round(options.currentDistance));
         }
       });
     }
