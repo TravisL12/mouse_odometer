@@ -111,7 +111,8 @@ class MouseOdometer {
     const { x: oldX, y: oldY } = this.lastMove;
     const dx = Math.abs(oldX - newX);
     const dy = Math.abs(oldY - newY);
-    this.currentMove += Math.sqrt(dx ** 2 + dy ** 2);
+    const move = Math.sqrt(dx ** 2 + dy ** 2);
+    this.currentMove += move;
     this.currentDistance += this.currentMove;
     this.throttledUpdate();
     this.renderDistance();
