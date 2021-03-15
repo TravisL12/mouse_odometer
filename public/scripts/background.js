@@ -17,6 +17,32 @@ const settingValues = [
   'previousDistances',
 ];
 
+const testPrevious = [
+  { date: '2021-5-6', distance: 1234567 },
+  { date: '2021-5-7', distance: 2234567 },
+  { date: '2021-5-8', distance: 3234567 },
+  { date: '2021-5-9', distance: 334567 },
+  { date: '2021-5-9', distance: 334567 },
+  { date: '2021-5-9', distance: 334567 },
+  { date: '2021-5-10', distance: 4444567 },
+  { date: '2021-5-11', distance: 1214567 },
+  { date: '2021-5-13', distance: 1000567 },
+  { date: '2021-5-14', distance: 4000567 },
+  { date: '2021-5-12', distance: 1114567 },
+  { date: '2021-5-12', distance: 1114567 },
+  { date: '2021-5-12', distance: 1114567 },
+  { date: '2021-5-12', distance: 1114567 },
+  { date: '2021-5-14', distance: 2000567 },
+  { date: '2021-5-14', distance: 3000567 },
+  { date: '2021-5-14', distance: 2000567 },
+  { date: '2021-5-14', distance: 1000567 },
+  { date: '2021-5-14', distance: 2000567 },
+  { date: '2021-5-14', distance: 3000567 },
+  { date: '2021-5-14', distance: 2000567 },
+  { date: '2021-5-14', distance: 1000567 },
+  { date: '2021-5-14', distance: 2000567 },
+];
+
 const defaultValues = {
   showOdometer: false,
   currentDistance: 0,
@@ -29,7 +55,9 @@ const buildSettings = (options) => {
     options.currentDistance || defaultValues.currentDistance;
   let date = options.currentDate || defaultValues.currentDate;
   let previousDistances =
-    options.previousDistances || defaultValues.previousDistances;
+    testPrevious ||
+    options.previousDistances ||
+    defaultValues.previousDistances;
 
   const isNewDay = isDateInPast(new Date(date), new Date());
   if (isNewDay) {

@@ -50,3 +50,20 @@ body {
 .mouse-odometer-options-container .amount #reset:hover {
   color: #333;
 }
+
+.mouse-odometer-options-container .bar {
+  position: relative;
+  fill: rgb(253, 255, 106);
+  transition: fill 0.3s ease;
+  cursor: pointer;
+  font-family: Helvetica, sans-serif;
+  display: inline-block;
+}
+
+.mouse-odometer-options-container .bar.today {
+  fill: rgb(38, 212, 255);
+}
+
+.mouse-odometer-options-container .bar:hover {
+  fill: #ff4136;
+}
