@@ -1,4 +1,4 @@
-const dateInPast = (firstDate, secondDate) => {
+const isDateInPast = (firstDate, secondDate) => {
   return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 };
 
@@ -10,7 +10,7 @@ const formatDate = (date) => {
   return `${year}-${month}-${day}`;
 };
 
-const optionValues = [
+const settingValues = [
   'showOdometer',
   'currentDistance',
   'currentDate',
@@ -21,43 +21,43 @@ const defaultValues = {
   showOdometer: false,
   currentDistance: 0,
   currentDate: formatDate(new Date()),
-  previousDistances: Array(7).fill(0),
+  previousDistances: [],
 };
 
-const buildOptions = (options) => {
-  const showOdometer = options.showOdometer || defaultValues.showOdometer;
+const buildSettings = (options) => {
   let currentDistance =
     options.currentDistance || defaultValues.currentDistance;
   let date = options.currentDate || defaultValues.currentDate;
   let previousDistances =
     options.previousDistances || defaultValues.previousDistances;
-  const isNewDay = dateInPast(new Date(date), new Date());
 
+  const isNewDay = isDateInPast(new Date(date), new Date());
   if (isNewDay) {
+    previousDistances.push({ date, distance: options.currentDistance });
     date = formatDate(new Date());
-    previousDistances.unshift(options.currentDistance);
-    previousDistances.pop();
     currentDistance = 0;
   }
 
   return {
-    showOdometer,
+    showOdometer: options.showOdometer || defaultValues.showOdometer,
     currentDate: date,
     currentDistance,
     previousDistances,
   };
 };
 
-chrome.storage.sync.get(optionValues, (options) => {
-  chrome.storage.sync.set(buildOptions(options));
+// Builds default settings on first load
+chrome.storage.sync.get(settingValues, (options) => {
+  chrome.storage.sync.set(buildSettings(options));
 });
 
 chrome.runtime.onMessage.addListener((request) => {
-  if (request.lastMove > 0) {
-    chrome.storage.sync.get(optionValues, (options) => {
-      const settings = buildOptions(options);
-      const newDistance = settings.currentDistance + request.lastMove;
-      chrome.storage.sync.set({ ...settings, currentDistance: newDistance });
-    });
-  }
+  chrome.storage.sync.get(settingValues, (options) => {
+    const settings = buildSettings(options);
+    const newDistance =
+      request.latestDistance > settings.currentDistance
+        ? request.latestDistance
+        : settings.currentDistance;
+    chrome.storage.sync.set({ ...settings, currentDistance: newDistance });
+  });
 });

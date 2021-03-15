@@ -37,15 +37,17 @@ class MouseOdometer {
       throttle(this.updateMove, delay).bind(this)
     );
 
-    getStorage((options) => {
-      if (options.showOdometer) {
-        this.initWrapper();
+    getStorage(this.initWrapper.bind(this));
+
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        this.syncDistance();
       }
     });
 
     chrome.storage.onChanged.addListener((changes) => {
       if (changes.showOdometer?.newValue) {
-        this.initWrapper();
+        this.initWrapper({ showOdometer: changes.showOdometer.newValue });
       } else if (
         this.odometer &&
         changes.showOdometer &&
@@ -57,46 +59,54 @@ class MouseOdometer {
     });
   }
 
-  initWrapper() {
-    this.odometerWrapper = document.createElement('div');
-    this.odometerWrapper.classList = 'mouse-odometer-distance';
-    const odomTarget = document.createElement('div');
-    this.odometerWrapper.appendChild(odomTarget);
-    document.body.appendChild(this.odometerWrapper);
-    this.odometer = new Odometer({
-      el: odomTarget,
-      value: 0,
-      format: ',ddd',
-      theme: 'default',
-    });
-    this.syncDistance();
+  initWrapper(options) {
+    if (options.showOdometer) {
+      this.odometerWrapper = document.createElement('div');
+      this.odometerWrapper.classList = 'mouse-odometer-distance';
+      this.currentDistance =
+        options.currentDistance || this.currentDistance || 0;
+      const odomTarget = document.createElement('div');
+      this.odometerWrapper.appendChild(odomTarget);
+      document.body.appendChild(this.odometerWrapper);
+      this.odometer = new Odometer({
+        el: odomTarget,
+        value: this.currentDistance,
+        format: ',ddd',
+        theme: 'default',
+      });
+      this.syncDistance();
+    }
   }
 
   syncDistance() {
+    getStorage((options) => {
+      this.currentDistance = options.currentDistance;
+      this.renderDistance();
+    });
+  }
+
+  renderDistance() {
     if (this.odometerWrapper) {
-      getStorage((options) => {
-        if (options.showOdometer) {
-          this.odometer.update(Math.round(options.currentDistance));
-        }
-      });
+      this.odometer.update(Math.round(this.currentDistance));
     }
   }
 
   updateMove(event) {
-    const { pageX, pageY } = event;
-    const { x, y } = this.lastMove;
-    if (!!x && !!y) {
-      const dx = Math.abs(x - pageX);
-      const dy = Math.abs(y - pageY);
-      this.currentMove += Math.sqrt(dx ** 2 + dy ** 2);
-      this.throttledUpdate();
-      this.syncDistance();
-    }
-    this.lastMove = { x: pageX, y: pageY };
+    const { clientX: newX, clientY: newY } = event;
+    const { x: oldX, y: oldY } = this.lastMove;
+
+    const dx = Math.abs(oldX - newX);
+    const dy = Math.abs(oldY - newY);
+    this.currentMove += Math.sqrt(dx ** 2 + dy ** 2);
+    this.currentDistance += this.currentMove;
+    this.throttledUpdate();
+    this.renderDistance();
+
+    this.lastMove = { x: newX, y: newY };
   }
 
   updateStorage() {
-    chrome.runtime.sendMessage({ lastMove: this.currentMove });
+    chrome.runtime.sendMessage({ latestDistance: this.currentDistance });
     this.currentMove = 0;
   }
 }
