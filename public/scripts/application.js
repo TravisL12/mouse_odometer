@@ -23,6 +23,10 @@ const throttle = (func, limit) => {
   };
 };
 
+const getStorage = (cb) => {
+  chrome.storage.sync.get(['distance', 'showOdometer'], cb);
+};
+
 class MouseOdometer {
   constructor(delay = THROTTLE_DELAY) {
     this.currentMove = 0;
@@ -33,7 +37,7 @@ class MouseOdometer {
       throttle(this.updateMove, delay).bind(this)
     );
 
-    chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
+    getStorage((options) => {
       if (options.showOdometer) {
         this.initWrapper();
       }
@@ -70,7 +74,7 @@ class MouseOdometer {
 
   syncDistance() {
     if (this.odometerWrapper) {
-      chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
+      getStorage((options) => {
         if (options.showOdometer) {
           this.odometer.update(Math.round(options.distance));
         }
