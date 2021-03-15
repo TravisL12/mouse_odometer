@@ -24,7 +24,7 @@ const throttle = (func, limit) => {
 };
 
 const getStorage = (cb) => {
-  chrome.storage.sync.get(['distance', 'showOdometer'], cb);
+  chrome.storage.sync.get(['mouseOdometer'], cb);
 };
 
 class MouseOdometer {
@@ -37,20 +37,19 @@ class MouseOdometer {
       throttle(this.updateMove, delay).bind(this)
     );
 
-    getStorage((options) => {
-      if (options.showOdometer) {
+    getStorage(({ mouseOdometer }) => {
+      if (mouseOdometer.showOdometer) {
         this.initWrapper();
       }
     });
 
     chrome.storage.onChanged.addListener((changes) => {
-      if (changes.showOdometer?.newValue) {
+      const { mouseOdometer } = changes;
+      const { showOdometer } = mouseOdometer.newValue;
+
+      if (showOdometer) {
         this.initWrapper();
-      } else if (
-        this.odometer &&
-        changes.showOdometer &&
-        !changes.showOdometer.newValue
-      ) {
+      } else if (this.odometer && !showOdometer) {
         this.odometerWrapper.remove();
         delete this.odometer;
       }
@@ -75,8 +74,11 @@ class MouseOdometer {
   syncDistance() {
     if (this.odometerWrapper) {
       getStorage((options) => {
-        if (options.showOdometer) {
-          this.odometer.update(Math.round(options.distance));
+        const {
+          mouseOdometer: { showOdometer, currentDistance },
+        } = options;
+        if (showOdometer) {
+          this.odometer.update(Math.round(currentDistance));
         }
       });
     }

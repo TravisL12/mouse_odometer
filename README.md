@@ -41,6 +41,7 @@ The overall movement distance is saved to `chrome.storage` that will be used to 
 ```
 {
   mouseOdometer: {
+    showOdometer: boolean,
     currentDate: Date,
     currentDistance: number,
     previousDistances: number[]  // just keep an array of length 7 that pops and unshifts the previous distance on a new day

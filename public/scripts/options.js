@@ -7,7 +7,12 @@ const setDistanceDisplay = (amount) => {
 };
 
 const setStorage = (options) => {
-  chrome.storage.sync.set(options);
+  chrome.storage.sync.get(['mouseOdometer'], (data) => {
+    const { mouseOdometer } = data;
+    chrome.storage.sync.set({
+      mouseOdometer: { ...mouseOdometer, ...options },
+    });
+  });
 };
 
 showOdometerOption.addEventListener('change', (event) => {
@@ -15,16 +20,17 @@ showOdometerOption.addEventListener('change', (event) => {
 });
 
 const updateDistance = () => {
-  chrome.storage.sync.get(['distance', 'showOdometer'], (options) => {
-    const amount = Math.round(options.distance || 0).toLocaleString();
+  chrome.storage.sync.get(['mouseOdometer'], (options) => {
+    const { currentDistance, showOdometer } = options.mouseOdometer;
+    const amount = Math.round(currentDistance || 0).toLocaleString();
     setDistanceDisplay(amount);
-    showOdometerOption.checked = options.showOdometer || false;
+    showOdometerOption.checked = showOdometer || false;
   });
 };
 
 reset.addEventListener('click', (event) => {
   event.preventDefault();
-  setStorage({ distance: 0 });
+  setStorage({ currentDistance: 0 });
   setDistanceDisplay(0);
 });
 
