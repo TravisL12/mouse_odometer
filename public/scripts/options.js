@@ -1,23 +1,18 @@
 // elements
 const distance = document.getElementById('distance');
 const history = document.getElementById('history');
-const showOdometerOption = document.getElementById('show-odometer');
-const reset = document.getElementById('reset');
+const showOdometerCheckbox = document.getElementById('show-odometer');
 
 // graph values
-const barWidth = 10;
-const barHeight = 50;
+const BAR_WIDTH = 10;
+const BAR_HEIGHT = 50;
 const DAY_SLICE = 18;
-
-const setDistanceDisplay = (amount) => {
-  distance.textContent = `${amount} pixels today!`;
-};
 
 const setStorage = (options) => {
   chrome.storage.sync.set(options);
 };
 
-showOdometerOption.addEventListener('change', (event) => {
+showOdometerCheckbox.addEventListener('change', (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
 
@@ -29,26 +24,31 @@ const buildHistory = (options) => {
     dataSlice.map(({ distance }) => distance)
   );
 
-  const todayHeight = (currentDistance / maxValue) * barHeight;
-  const todayYDist = barHeight - todayHeight;
-  const todayXTranslate = dataSlice.length * (barWidth + 1);
+  const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
+  const todayYDist = BAR_HEIGHT - todayHeight;
+  const todayXTranslate = dataSlice.length * (BAR_WIDTH + 1);
 
   const plot = dataSlice
     .map(({ date, distance }, idx) => {
-      const height = (distance / maxValue) * barHeight;
-      const yDist = barHeight - height;
-      const xTranslate = idx + idx * barWidth;
+      const height = (distance / maxValue) * BAR_HEIGHT;
+      const yDist = BAR_HEIGHT - height;
+      const xTranslate = idx + idx * BAR_WIDTH;
       const formatttedDate = new Date(date).toLocaleDateString();
+      const formattedDistance = Math.round(distance).toLocaleString();
       return `
       <g class="bar" transform="translate(${xTranslate},0)">
-        <rect height="${height}" y="${yDist}" width="${barWidth}"></rect>
+        <title id="title">${formattedDistance} - ${formatttedDate}</title>
+        <rect height="${height}" y="${yDist}" width="${BAR_WIDTH}"></rect>
       </g>`;
     })
     .join('');
 
   const todayPlot = `
       <g class="bar today" transform="translate(${todayXTranslate},0)">
-        <rect height="${todayHeight}" y="${todayYDist}" width="${barWidth}"></rect>
+        <title id="title">Today! - ${Math.round(
+          currentDistance
+        ).toLocaleString()}</title>
+        <rect height="${todayHeight}" y="${todayYDist}" width="${BAR_WIDTH}"></rect>
       </g>`;
 
   history.innerHTML = `
@@ -57,12 +57,11 @@ const buildHistory = (options) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       class="chart"
-      height="${barHeight}"
+      height="${BAR_HEIGHT}"
       width="100%"
       aria-labelledby="title"
       role="img"
     >
-      <title id="title">A history of mousing!</title>
     ${plot}
     ${todayPlot}
     </svg>`;
@@ -76,17 +75,10 @@ const updateDistance = () => {
         buildHistory(options);
       }
       const amount = Math.round(options.currentDistance || 0).toLocaleString();
-      setDistanceDisplay(amount);
-      showOdometerOption.checked = options.showOdometer || false;
+      distance.textContent = `${amount} pixels today!`;
+      showOdometerCheckbox.checked = options.showOdometer || false;
     }
   );
 };
-
-// eventually remove this
-// reset.addEventListener('click', (event) => {
-//   event.preventDefault();
-//   setStorage({ currentDistance: 0 });
-//   setDistanceDisplay(0);
-// });
 
 updateDistance();
