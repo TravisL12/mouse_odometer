@@ -30,24 +30,29 @@ const getStorage = (cb) => {
 class MouseOdometer {
   constructor(delay = THROTTLE_DELAY) {
     this.currentMove = 0;
-    this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
     this.lastMove = { x: 0, y: 0 };
+    this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
+    getStorage(this.buildOdometerWrapper.bind(this));
+
+    // Mouse movement listener
     document.body.addEventListener(
       'mousemove',
       throttle(this.updateMove, delay).bind(this)
     );
 
-    getStorage(this.initWrapper.bind(this));
-
+    // When tab becomes active, sync distance
     document.addEventListener('visibilitychange', () => {
       if (!document.hidden) {
         this.syncDistance();
       }
     });
 
+    // When showOdometer setting changes hide/show odometer
     chrome.storage.onChanged.addListener((changes) => {
       if (changes.showOdometer?.newValue) {
-        this.initWrapper({ showOdometer: changes.showOdometer.newValue });
+        this.buildOdometerWrapper({
+          showOdometer: changes.showOdometer.newValue,
+        });
       } else if (
         this.odometer &&
         changes.showOdometer &&
@@ -59,7 +64,7 @@ class MouseOdometer {
     });
   }
 
-  initWrapper(options) {
+  buildOdometerWrapper(options) {
     if (options.showOdometer) {
       this.odometerWrapper = document.createElement('div');
       this.odometerWrapper.classList = 'mouse-odometer-distance';
@@ -73,11 +78,13 @@ class MouseOdometer {
         value: this.currentDistance,
         format: ',ddd',
         theme: 'default',
+        duration: 1000,
       });
       this.syncDistance();
     }
   }
 
+  // Sync with chrome.storage
   syncDistance() {
     getStorage((options) => {
       this.currentDistance = options.currentDistance;
@@ -85,29 +92,30 @@ class MouseOdometer {
     });
   }
 
+  // Updates chrome.storage with latest distance
+  updateStorage() {
+    chrome.runtime.sendMessage({ latestDistance: this.currentDistance });
+    this.currentMove = 0;
+  }
+
+  // Update on screen odometer
   renderDistance() {
     if (this.odometerWrapper) {
       this.odometer.update(Math.round(this.currentDistance));
     }
   }
 
+  // Calculate distance moved
   updateMove(event) {
     const { clientX: newX, clientY: newY } = event;
     const { x: oldX, y: oldY } = this.lastMove;
-
     const dx = Math.abs(oldX - newX);
     const dy = Math.abs(oldY - newY);
     this.currentMove += Math.sqrt(dx ** 2 + dy ** 2);
     this.currentDistance += this.currentMove;
     this.throttledUpdate();
     this.renderDistance();
-
     this.lastMove = { x: newX, y: newY };
-  }
-
-  updateStorage() {
-    chrome.runtime.sendMessage({ latestDistance: this.currentDistance });
-    this.currentMove = 0;
   }
 }
 
