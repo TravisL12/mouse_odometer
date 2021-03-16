@@ -54,15 +54,16 @@ chrome.storage.sync.get(settingValues, (options) => {
   chrome.storage.sync.set(buildSettings(options));
 });
 
+// Return true makes async response
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   chrome.storage.sync.get(settingValues, (options) => {
     const settings = buildSettings(options);
-    sendResponse({ isNewDay: settings.isNewDay });
     const newDistance =
       request.latestDistance > settings.currentDistance && !settings.isNewDay
         ? request.latestDistance
         : settings.currentDistance;
     chrome.storage.sync.set({ ...settings, currentDistance: newDistance });
+    sendResponse({ isNewDay: settings.isNewDay });
   });
   return true;
 });

@@ -1,3 +1,13 @@
+:root {
+  --red: #ff9090;
+  --black: #333333;
+  --yellow-bar: #fdff6a;
+  --today-bar: #26d4ff;
+  --gradient-color-one: #9bb7ff;
+  --gradient-color-three: #e4fff0;
+  --transparent-black: rgba(0, 0, 0, 0.1);
+}
+
 body {
   margin: 0;
 }
@@ -7,11 +17,11 @@ body {
   bottom: 10px;
   right: 10px;
   z-index: 1000000;
-  background: black;
-  color: white;
-  padding: 2px;
-  font-size: 14px;
-  line-height: 14px;
+  font-weight: 700;
+  color: var(--red);
+  mix-blend-mode: difference;
+  font-size: 18px;
+  line-height: 18px;
 }
 
 .mouse-odometer-options-container {
@@ -22,9 +32,9 @@ body {
   padding: 10px 20px;
   background: linear-gradient(
     336deg,
-    rgba(155, 183, 255, 1) 0%,
-    rgba(255, 144, 144, 1) 44%,
-    rgba(228, 255, 240, 1) 100%
+    var(--gradient-color-one) 0%,
+    var(--red) 44%,
+    var(--gradient-color-three) 100%
   );
 }
 
@@ -48,18 +58,18 @@ body {
 }
 
 .mouse-odometer-options-container .amount #reset:hover {
-  color: #333;
+  color: var(--black);
 }
 
 .mouse-odometer-options-container .history {
   height: 50px;
   padding: 4px;
-  background: rgba(0, 0, 0, 0.1);
+  background: var(--transparent-black);
 }
 
 .mouse-odometer-options-container .history .bar {
   position: relative;
-  fill: rgb(253, 255, 106);
+  fill: var(--yellow-bar);
   transition: fill 0.3s ease;
   cursor: pointer;
   font-family: Helvetica, sans-serif;
@@ -67,9 +77,9 @@ body {
 }
 
 .mouse-odometer-options-container .history .bar.today {
-  fill: rgb(38, 212, 255);
+  fill: var(--today-bar);
 }
 
 .mouse-odometer-options-container .history .bar:hover {
-  fill: #ff4136;
+  fill: var(--red);
 }
