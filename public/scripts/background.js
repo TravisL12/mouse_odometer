@@ -73,19 +73,19 @@ const defaultValues = {
   previousDistances: [],
 };
 
-const increment = 10000;
+const TIER_INCREMENT = 100000;
 const changeIcon = (distance) => {
-  let path = 'public/images/mouse_icon_normal.png';
-  if (distance > increment * 4) {
+  let path = 'public/images/mouse_icon_white.png';
+  if (distance > TIER_INCREMENT * 10) {
     path = 'public/images/mouse_icon_green.png';
   }
-  if (distance > increment * 6) {
+  if (distance > TIER_INCREMENT * 25) {
     path = 'public/images/mouse_icon_blue.png';
   }
-  if (distance > increment * 8) {
+  if (distance > TIER_INCREMENT * 50) {
     path = 'public/images/mouse_icon_yellow.png';
   }
-  if (distance > increment * 10) {
+  if (distance > TIER_INCREMENT * 100) {
     path = 'public/images/mouse_icon_red.png';
   }
   chrome.browserAction.setIcon({ path });
