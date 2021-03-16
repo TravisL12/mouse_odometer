@@ -21,9 +21,10 @@ const buildHistory = (options) => {
   const dataSlice = historyData.slice(-1 * DAY_SLICE);
   const maxValue = Math.max.apply(
     null,
-    dataSlice.map(({ distance }) => distance)
+    [...dataSlice, { distance: currentDistance }].map(
+      ({ distance }) => distance
+    )
   );
-
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
   const todayXTranslate = dataSlice.length * (BAR_WIDTH + 1);
@@ -57,12 +58,12 @@ const buildHistory = (options) => {
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
       class="chart"
-      height="${BAR_HEIGHT}"
+      height="100%"
       width="100%"
       aria-labelledby="title"
       role="img"
     >
-    ${plot}
+    ${plot ?? ''}
     ${todayPlot}
     </svg>`;
 };

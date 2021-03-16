@@ -17,6 +17,13 @@ const settingValues = [
   'previousDistances',
 ];
 
+const testDistances = [
+  { distance: 2344323, date: '2021-1-15' },
+  { distance: 1344323, date: '2021-1-15' },
+  { distance: 3344323, date: '2021-1-15' },
+  { distance: 1344323, date: '2021-1-15' },
+];
+
 const defaultValues = {
   showOdometer: false,
   currentDistance: 0,

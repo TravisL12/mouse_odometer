@@ -28,21 +28,6 @@ The overall movement distance is saved to `chrome.storage` that will be used to 
 
 ## To Do
 
-- The Odometer.js library will eventually be removed since there doesn't need to be a current odometer reading on the DOM directly. This functionality will eventually be handled completely by the `options.html` page (i.e. the popup).
-
 - Add a mouse icon for the menu bar
 
 - Make the options page more flashy.
-
-- Create running totals for past 7 days of movement. Add a nice graph of these values in the Options.html view.
-
-- Structure the chrome storage as:
-
-```
-{
-  showOdometer: boolean,
-  currentDate: Date,
-  currentDistance: number,
-  previousDistances: number[]  // just keep an array of length 7 that pops and unshifts the previous distance on a new day
-}
-```

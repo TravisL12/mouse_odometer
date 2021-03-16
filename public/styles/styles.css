@@ -51,7 +51,13 @@ body {
   color: #333;
 }
 
-.mouse-odometer-options-container .bar {
+.mouse-odometer-options-container .history {
+  height: 50px;
+  padding: 4px;
+  background: rgba(0, 0, 0, 0.1);
+}
+
+.mouse-odometer-options-container .history .bar {
   position: relative;
   fill: rgb(253, 255, 106);
   transition: fill 0.3s ease;
@@ -60,10 +66,10 @@ body {
   display: inline-block;
 }
 
-.mouse-odometer-options-container .bar.today {
+.mouse-odometer-options-container .history .bar.today {
   fill: rgb(38, 212, 255);
 }
 
-.mouse-odometer-options-container .bar:hover {
+.mouse-odometer-options-container .history .bar:hover {
   fill: #ff4136;
 }
