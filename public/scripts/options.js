@@ -19,15 +19,19 @@ showOdometerCheckbox.addEventListener('change', (event) => {
 const buildHistory = (options) => {
   const { previousDistances: historyData, currentDistance } = options;
   const dataSlice = historyData.slice(-1 * DAY_SLICE);
-  const maxValue = Math.max.apply(
-    null,
-    [...dataSlice, { distance: currentDistance }].map(
-      ({ distance }) => distance
-    )
-  );
+  const maxValue =
+    Math.max.apply(
+      null,
+      [...dataSlice, { distance: currentDistance }].map(
+        ({ distance }) => distance
+      )
+    ) || 1;
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
   const todayXTranslate = dataSlice.length * (BAR_WIDTH + 1);
+
+  console.log(todayHeight, todayYDist, todayXTranslate);
+  console.log(currentDistance, maxValue);
 
   const plot = dataSlice
     .map(({ date, distance }, idx) => {
