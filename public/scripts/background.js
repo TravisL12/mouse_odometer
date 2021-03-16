@@ -73,7 +73,7 @@ const defaultValues = {
   previousDistances: [],
 };
 
-chrome.browserAction.setIcon({ path: 'public/images/mouse.svg' });
+// chrome.browserAction.setIcon({ path: 'public/images/mouse.svg' });
 
 const buildSettings = (options) => {
   let currentDistance =
