@@ -94,7 +94,13 @@ class MouseOdometer {
 
   // Updates chrome.storage with latest distance
   updateStorage() {
-    chrome.runtime.sendMessage({ latestDistance: this.currentDistance });
+    chrome.runtime
+      .sendMessage({ latestDistance: this.currentDistance }, (response) => {
+        if (response?.isNewDay) {
+          this.currentDistance = 0;
+        }
+      })
+      ?.bind(this);
     this.currentMove = 0;
   }
 

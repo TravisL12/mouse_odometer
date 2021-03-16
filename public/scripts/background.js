@@ -45,6 +45,7 @@ const buildSettings = (options) => {
     currentDate: date,
     currentDistance,
     previousDistances,
+    isNewDay,
   };
 };
 
@@ -53,13 +54,15 @@ chrome.storage.sync.get(settingValues, (options) => {
   chrome.storage.sync.set(buildSettings(options));
 });
 
-chrome.runtime.onMessage.addListener((request) => {
+chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
   chrome.storage.sync.get(settingValues, (options) => {
     const settings = buildSettings(options);
+    sendResponse({ isNewDay: settings.isNewDay });
     const newDistance =
-      request.latestDistance > settings.currentDistance
+      request.latestDistance > settings.currentDistance && !settings.isNewDay
         ? request.latestDistance
         : settings.currentDistance;
     chrome.storage.sync.set({ ...settings, currentDistance: newDistance });
   });
+  return true;
 });
