@@ -106,7 +106,7 @@ class MouseOdometer {
 
   // Update on screen odometer
   renderDistance() {
-    if (this.odometerWrapper) {
+    if (this.odometerWrapper && this.odometer) {
       this.odometer.update(Math.round(this.currentDistance));
     }
   }

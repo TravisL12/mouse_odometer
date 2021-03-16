@@ -1,12 +1,14 @@
 // elements
+const container = document.querySelector('.mouse-odometer-options-container');
 const distance = document.getElementById('distance');
 const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
 
 // graph values
+const CONTAINER_WIDTH = 300;
 const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
-const DAY_SLICE = 18;
+const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 
 const setStorage = (options) => {
   chrome.storage.sync.set(options);
@@ -29,9 +31,6 @@ const buildHistory = (options) => {
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
   const todayXTranslate = dataSlice.length * (BAR_WIDTH + 1);
-
-  console.log(todayHeight, todayYDist, todayXTranslate);
-  console.log(currentDistance, maxValue);
 
   const plot = dataSlice
     .map(({ date, distance }, idx) => {

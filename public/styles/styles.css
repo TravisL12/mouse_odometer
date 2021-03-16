@@ -1,6 +1,6 @@
 :root {
   --red: #ff9090;
-  --black: #333333;
+  --black: rgba(51, 51, 51, 0.8);
   --yellow-bar: #fdff6a;
   --today-bar: #26d4ff;
   --gradient-color-one: #9bb7ff;
@@ -10,6 +10,13 @@
 
 body {
   margin: 0;
+}
+
+ul,
+li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .mouse-odometer-distance {
@@ -29,7 +36,8 @@ body {
   flex-direction: column;
   justify-content: space-between;
   gap: 20px;
-  padding: 10px 20px;
+  padding: 10px;
+  width: 300px;
   background: linear-gradient(
     336deg,
     var(--gradient-color-one) 0%,
@@ -82,4 +90,28 @@ body {
 
 .mouse-odometer-options-container .history .bar:hover {
   fill: var(--red);
+}
+
+.mouse-odometer-options-container .about {
+  padding: 10px;
+  width: 100%;
+  box-sizing: border-box;
+  background: var(--transparent-black);
+  color: var(--black);
+}
+.mouse-odometer-options-container .about p {
+  font-weight: bold;
+  margin: 0 0 5px;
+  text-align: center;
+}
+.mouse-odometer-options-container .about ul {
+  display: flex;
+  justify-content: space-between;
+}
+.mouse-odometer-options-container .about a {
+  color: var(--black);
+  text-decoration: none;
+}
+.mouse-odometer-options-container .about a:hover {
+  text-decoration: underline;
 }
