@@ -32,10 +32,7 @@
   ],
   "browser_action": {
     "default_title": "Mouse Odometer!",
-    "default_popup": "options.html",
-    "default_icon": {
-      "16": "public/images/mouse_icon_normal.png"
-    }
+    "default_popup": "options.html"
   },
 
   "options_ui": {

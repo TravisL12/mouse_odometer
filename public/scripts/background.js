@@ -73,7 +73,23 @@ const defaultValues = {
   previousDistances: [],
 };
 
-// chrome.browserAction.setIcon({ path: 'public/images/mouse.svg' });
+const increment = 10000;
+const changeIcon = (distance) => {
+  let path = 'public/images/mouse_icon_normal.png';
+  if (distance > increment * 4) {
+    path = 'public/images/mouse_icon_green.png';
+  }
+  if (distance > increment * 6) {
+    path = 'public/images/mouse_icon_blue.png';
+  }
+  if (distance > increment * 8) {
+    path = 'public/images/mouse_icon_yellow.png';
+  }
+  if (distance > increment * 10) {
+    path = 'public/images/mouse_icon_red.png';
+  }
+  chrome.browserAction.setIcon({ path });
+};
 
 const buildSettings = (options) => {
   let currentDistance =
@@ -111,6 +127,7 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       request.latestDistance > settings.currentDistance && !settings.isNewDay
         ? request.latestDistance
         : settings.currentDistance;
+    changeIcon(newDistance);
     chrome.storage.sync.set({ ...settings, currentDistance: newDistance });
     sendResponse({ isNewDay: settings.isNewDay });
   });
