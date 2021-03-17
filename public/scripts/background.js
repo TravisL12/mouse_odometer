@@ -1,4 +1,4 @@
-import { setStorage, changeIcon, buildSettings, getStorage } from './helper.js';
+import { setStorage, findTier, buildSettings, getStorage } from './helper.js';
 
 // Builds default settings on first load
 getStorage((options) => {
@@ -13,7 +13,8 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       request.latestDistance > settings.currentDistance && !settings.isNewDay
         ? request.latestDistance
         : settings.currentDistance;
-    changeIcon(newDistance);
+    const iconPath = findTier(newDistance).path;
+    chrome.browserAction.setIcon({ path: iconPath });
     setStorage({ ...settings, currentDistance: newDistance });
     sendResponse({ isNewDay: settings.isNewDay });
   });

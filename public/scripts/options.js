@@ -1,4 +1,4 @@
-import { setStorage, getStorage } from './helper.js';
+import { findTier, setStorage, getStorage } from './helper.js';
 
 // elements
 const distance = document.getElementById('distance');
@@ -39,8 +39,9 @@ const buildHistory = (options) => {
       const xTranslate = idx + idx * BAR_WIDTH;
       const formatttedDate = new Date(date).toLocaleDateString();
       const formattedDistance = Math.round(distance).toLocaleString();
+      const tier = findTier(distance).type;
       return `
-      <g class="bar" transform="translate(${xTranslate},0)">
+      <g class="bar ${tier}" transform="translate(${xTranslate},0)">
         <title id="title">${formattedDistance} - ${formatttedDate}</title>
         <rect height="${height}" y="${yDist}" width="${BAR_WIDTH}"></rect>
       </g>`;
@@ -48,7 +49,9 @@ const buildHistory = (options) => {
     .join('');
 
   const todayPlot = `
-      <g class="bar today" transform="translate(${todayXTranslate},0)">
+      <g class="bar ${
+        findTier(currentDistance).type
+      } today" transform="translate(${todayXTranslate},0)">
         <title id="title">Today! - ${Math.round(
           currentDistance
         ).toLocaleString()}</title>
