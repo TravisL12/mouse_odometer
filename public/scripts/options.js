@@ -1,7 +1,7 @@
 import { findTier, setStorage, getStorage } from './helper.js';
 
 // elements
-const distance = document.getElementById('distance');
+const distanceEl = document.getElementById('distance');
 const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const version = document.getElementById('version');
@@ -17,6 +17,13 @@ const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 showOdometerCheckbox.addEventListener('change', (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
+
+const updateDisplay = (values) => {
+  const { distance, date } = values;
+  const formattedDistance = Math.round(distance || 0).toLocaleString();
+  const dateDisplay = date === 'today' ? date : `on ${date}`;
+  distanceEl.textContent = `${formattedDistance} pixels ${dateDisplay}!`;
+};
 
 const buildHistory = (options) => {
   const { previousDistances: historyData, currentDistance } = options;
@@ -43,7 +50,12 @@ const buildHistory = (options) => {
       return `
       <g class="bar ${tier}" transform="translate(${xTranslate},0)">
         <title id="title">${formattedDistance} - ${formatttedDate}</title>
-        <rect height="${height}" y="${yDist}" width="${BAR_WIDTH}"></rect>
+        <rect
+          height="${height}"
+          y="${yDist}"
+          width="${BAR_WIDTH}"
+          data-date="${date}"
+          data-distance="${distance}"></rect>
       </g>`;
     })
     .join('');
@@ -55,7 +67,9 @@ const buildHistory = (options) => {
         <title id="title">Today! - ${Math.round(
           currentDistance
         ).toLocaleString()}</title>
-        <rect height="${todayHeight}" y="${todayYDist}" width="${BAR_WIDTH}"></rect>
+        <rect height="${todayHeight}" y="${todayYDist}" width="${BAR_WIDTH}"
+        data-date="today"
+          data-distance="${currentDistance}"></rect>
       </g>`;
 
   history.innerHTML = `
@@ -72,6 +86,15 @@ const buildHistory = (options) => {
     ${plot ?? ''}
     ${todayPlot}
     </svg>`;
+
+  history.querySelectorAll('.bar').forEach((barEl) => {
+    barEl.addEventListener('click', (event) => {
+      updateDisplay({
+        distance: event.target.dataset.distance,
+        date: event.target.dataset.date,
+      });
+    });
+  });
 };
 
 const updateDistance = () => {
@@ -79,8 +102,10 @@ const updateDistance = () => {
     if (options.previousDistances) {
       buildHistory(options);
     }
-    const amount = Math.round(options.currentDistance || 0).toLocaleString();
-    distance.textContent = `${amount} pixels today!`;
+    updateDisplay({
+      distance: options.currentDistance,
+      date: 'today',
+    });
     showOdometerCheckbox.checked = options.showOdometer || false;
   });
 };

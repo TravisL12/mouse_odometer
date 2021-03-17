@@ -13,6 +13,12 @@ export const getStorage = (cb) => {
   chrome.storage.sync.get(SETTING_VALUES, cb);
 };
 
+const WHITE = 'white';
+const GREEN = 'green';
+const BLUE = 'blue';
+const YELLOW = 'yellow';
+const RED = 'red';
+
 const formatDate = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
@@ -34,26 +40,26 @@ const isDateInPast = (firstDate, secondDate) => {
 
 const TIER_INCREMENT = 100000;
 const tiers = {
-  white: { type: 'white', path: 'public/images/mouse_icon_white.png' },
-  green: { type: 'green', path: 'public/images/mouse_icon_green.png' },
-  blue: { type: 'blue', path: 'public/images/mouse_icon_blue.png' },
-  yellow: { type: 'yellow', path: 'public/images/mouse_icon_yellow.png' },
-  red: { type: 'red', path: 'public/images/mouse_icon_red.png' },
+  [WHITE]: { type: WHITE, path: 'public/images/mouse_icon_white.png' },
+  [GREEN]: { type: GREEN, path: 'public/images/mouse_icon_green.png' },
+  [BLUE]: { type: BLUE, path: 'public/images/mouse_icon_blue.png' },
+  [YELLOW]: { type: YELLOW, path: 'public/images/mouse_icon_yellow.png' },
+  [RED]: { type: RED, path: 'public/images/mouse_icon_red.png' },
 };
 export const findTier = (distance) => {
   if (distance > TIER_INCREMENT * 100) {
-    return tiers.red;
+    return tiers[RED];
   }
   if (distance > TIER_INCREMENT * 50) {
-    return tiers.yellow;
+    return tiers[YELLOW];
   }
   if (distance > TIER_INCREMENT * 25) {
-    return tiers.blue;
+    return tiers[BLUE];
   }
   if (distance > TIER_INCREMENT * 10) {
-    return tiers.green;
+    return tiers[GREEN];
   }
-  return tiers.white;
+  return tiers[WHITE]; // default
 };
 
 export const buildSettings = (options) => {
@@ -61,9 +67,7 @@ export const buildSettings = (options) => {
     options.currentDistance || DEFAULT_VALUES.currentDistance;
   let date = options.currentDate || DEFAULT_VALUES.currentDate;
   let previousDistances =
-    testPrevious() ||
-    options.previousDistances ||
-    DEFAULT_VALUES.previousDistances;
+    options.previousDistances || DEFAULT_VALUES.previousDistances;
 
   const isNewDay = isDateInPast(new Date(date), new Date());
   if (isNewDay) {
@@ -80,6 +84,7 @@ export const buildSettings = (options) => {
     isNewDay,
   };
 };
+
 // test data for previousDistances
 function testPrevious() {
   return [
