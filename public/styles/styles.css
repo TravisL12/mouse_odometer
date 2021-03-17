@@ -10,20 +10,9 @@
   --transparent-black: rgba(0, 0, 0, 0.05);
 }
 
-body {
-  margin: 0;
+.mouse-odometer-distance {
   color: var(--black);
   font-family: Arial, Helvetica, sans-serif;
-}
-
-ul,
-li {
-  margin: 0;
-  padding: 0;
-  list-style: none;
-}
-
-.mouse-odometer-distance {
   position: fixed;
   bottom: 10px;
   right: 10px;
@@ -36,6 +25,8 @@ li {
 }
 
 .mouse-odometer-options-container {
+  color: var(--black);
+  font-family: Arial, Helvetica, sans-serif;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
@@ -48,6 +39,13 @@ li {
     var(--red) 44%,
     var(--gradient-color-three) 100%
   );
+}
+
+.mouse-odometer-options-container ul,
+.mouse-odometer-options-container li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
 }
 
 .mouse-odometer-options-container .box {
