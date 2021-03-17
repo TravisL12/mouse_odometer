@@ -1,10 +1,11 @@
 import { findTier, setStorage, getStorage } from './helper.js';
 
 // elements
-const distanceEl = document.getElementById('distance');
 const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const version = document.getElementById('version');
+const odometer = document.getElementById('odometer');
+const selectedDate = document.getElementById('selected-date');
 const manifestData = chrome.runtime.getManifest();
 version.textContent = `v${manifestData.version}`;
 
@@ -13,6 +14,11 @@ const CONTAINER_WIDTH = 300;
 const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
+const dateFormatOptions = {
+  year: 'numeric',
+  month: 'long',
+  day: 'numeric',
+};
 
 showOdometerCheckbox.addEventListener('change', (event) => {
   setStorage({ showOdometer: event.target.checked });
@@ -21,8 +27,11 @@ showOdometerCheckbox.addEventListener('change', (event) => {
 const updateDisplay = (values) => {
   const { distance, date } = values;
   const formattedDistance = Math.round(distance || 0).toLocaleString();
-  const dateDisplay = date === 'today' ? date : `on ${date}`;
-  distanceEl.textContent = `${formattedDistance} pixels ${dateDisplay}!`;
+  odometer.innerHTML = formattedDistance;
+  selectedDate.textContent =
+    date === 'today'
+      ? 'Today'
+      : new Date(date).toLocaleDateString(undefined, dateFormatOptions);
 };
 
 const buildHistory = (options) => {

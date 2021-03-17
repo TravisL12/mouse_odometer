@@ -39,7 +39,7 @@ li {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
-  gap: 20px;
+  gap: 10px;
   padding: 10px;
   width: 300px;
   background: linear-gradient(
@@ -59,6 +59,9 @@ li {
 .mouse-odometer-options-container .box.no-gap {
   gap: 0;
 }
+.mouse-odometer-options-container .box.column {
+  flex-direction: column;
+}
 
 .mouse-odometer-options-container .title {
   font-size: 36px;
@@ -66,16 +69,8 @@ li {
 }
 
 .mouse-odometer-options-container .amount {
-  justify-content: space-between;
-}
-
-.mouse-odometer-options-container .amount #reset {
-  cursor: pointer;
-  text-decoration: underline;
-}
-
-.mouse-odometer-options-container .amount #reset:hover {
-  color: var(--black);
+  font-size: 16px;
+  justify-content: center;
 }
 
 .mouse-odometer-options-container .history {
