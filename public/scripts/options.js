@@ -4,6 +4,9 @@ import { setStorage, getStorage } from './helper.js';
 const distance = document.getElementById('distance');
 const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
+const version = document.getElementById('version');
+const manifestData = chrome.runtime.getManifest();
+version.textContent = `v${manifestData.version}`;
 
 // graph values
 const CONTAINER_WIDTH = 300;

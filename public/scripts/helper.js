@@ -1,4 +1,3 @@
-const TIER_INCREMENT = 100000;
 export const SETTING_VALUES = [
   'showOdometer',
   'currentDistance',
@@ -33,6 +32,7 @@ const isDateInPast = (firstDate, secondDate) => {
   return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 };
 
+const TIER_INCREMENT = 100000;
 export const changeIcon = (distance) => {
   let path = 'public/images/mouse_icon_white.png';
   if (distance > TIER_INCREMENT * 10) {
