@@ -23,8 +23,15 @@ const throttle = (func, limit) => {
   };
 };
 
+const isDateInPast = (firstDate, secondDate) => {
+  return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
+};
+
 const getStorage = (cb) => {
-  chrome.storage.sync.get(['currentDistance', 'showOdometer'], cb);
+  chrome.storage.sync.get(
+    ['currentDistance', 'showOdometer', 'currentDate'],
+    cb
+  );
 };
 
 class MouseOdometer {
@@ -84,10 +91,25 @@ class MouseOdometer {
     }
   }
 
+  // Calculate distance moved
+  updateMove(event) {
+    const { clientX: newX, clientY: newY } = event;
+    const { x: oldX, y: oldY } = this.lastMove;
+    const dx = Math.abs(oldX - newX);
+    const dy = Math.abs(oldY - newY);
+    const move = Math.sqrt(dx ** 2 + dy ** 2);
+    this.currentMove += move;
+    this.currentDistance += this.currentMove;
+    this.throttledUpdate();
+    this.renderDistance();
+    this.lastMove = { x: newX, y: newY };
+  }
+
   // Sync with chrome.storage
   syncDistance() {
     getStorage((options) => {
-      this.currentDistance = options.currentDistance;
+      const isNewDay = isDateInPast(new Date(options.currentDate), new Date());
+      this.currentDistance = isNewDay ? 0 : options.currentDistance;
       this.renderDistance();
     });
   }
@@ -109,20 +131,6 @@ class MouseOdometer {
     if (this.odometerWrapper && this.odometer) {
       this.odometer.update(Math.round(this.currentDistance));
     }
-  }
-
-  // Calculate distance moved
-  updateMove(event) {
-    const { clientX: newX, clientY: newY } = event;
-    const { x: oldX, y: oldY } = this.lastMove;
-    const dx = Math.abs(oldX - newX);
-    const dy = Math.abs(oldY - newY);
-    const move = Math.sqrt(dx ** 2 + dy ** 2);
-    this.currentMove += move;
-    this.currentDistance += this.currentMove;
-    this.throttledUpdate();
-    this.renderDistance();
-    this.lastMove = { x: newX, y: newY };
   }
 }
 

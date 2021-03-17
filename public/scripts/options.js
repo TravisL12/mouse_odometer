@@ -4,10 +4,17 @@ import { findTier, setStorage, getStorage } from './helper.js';
 const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const version = document.getElementById('version');
-const odometer = document.getElementById('odometer');
 const selectedDate = document.getElementById('selected-date');
 const manifestData = chrome.runtime.getManifest();
 version.textContent = `v${manifestData.version}`;
+
+const odometer = new Odometer({
+  el: document.getElementById('odometer'),
+  value: 0,
+  format: ',ddd',
+  theme: 'default',
+  duration: 100,
+});
 
 // graph values
 const CONTAINER_WIDTH = 300;
@@ -26,8 +33,7 @@ showOdometerCheckbox.addEventListener('change', (event) => {
 
 const updateDisplay = (values) => {
   const { distance, date } = values;
-  const formattedDistance = Math.round(distance || 0).toLocaleString();
-  odometer.innerHTML = formattedDistance;
+  odometer.update(Math.round(distance || 0));
   selectedDate.textContent =
     date === 'today'
       ? 'Today'
