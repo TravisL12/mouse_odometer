@@ -1,5 +1,6 @@
+import { setStorage, getStorage } from './helper.js';
+
 // elements
-const container = document.querySelector('.mouse-odometer-options-container');
 const distance = document.getElementById('distance');
 const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
@@ -9,10 +10,6 @@ const CONTAINER_WIDTH = 300;
 const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
-
-const setStorage = (options) => {
-  chrome.storage.sync.set(options);
-};
 
 showOdometerCheckbox.addEventListener('change', (event) => {
   setStorage({ showOdometer: event.target.checked });
@@ -72,17 +69,14 @@ const buildHistory = (options) => {
 };
 
 const updateDistance = () => {
-  chrome.storage.sync.get(
-    ['currentDistance', 'showOdometer', 'previousDistances'],
-    (options) => {
-      if (options.previousDistances) {
-        buildHistory(options);
-      }
-      const amount = Math.round(options.currentDistance || 0).toLocaleString();
-      distance.textContent = `${amount} pixels today!`;
-      showOdometerCheckbox.checked = options.showOdometer || false;
+  getStorage((options) => {
+    if (options.previousDistances) {
+      buildHistory(options);
     }
-  );
+    const amount = Math.round(options.currentDistance || 0).toLocaleString();
+    distance.textContent = `${amount} pixels today!`;
+    showOdometerCheckbox.checked = options.showOdometer || false;
+  });
 };
 
 updateDistance();

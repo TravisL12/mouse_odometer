@@ -17,8 +17,8 @@
     }
   },
   "background": {
-    "scripts": ["public/scripts/background.js"],
-    "persistent": true
+    "page": "background.html",
+    "persistent": false
   },
   "content_scripts": [
     {
