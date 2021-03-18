@@ -35,7 +35,7 @@ const getStorage = (cb) => {
 };
 
 class MouseOdometer {
-  constructor(delay = THROTTLE_DELAY) {
+  constructor() {
     this.currentMove = 0;
     this.lastMove = { x: 0, y: 0 };
     this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
@@ -44,7 +44,7 @@ class MouseOdometer {
     // Mouse movement listener
     document.body.addEventListener(
       'mousemove',
-      throttle(this.updateMove, delay).bind(this)
+      throttle(this.updateMove, THROTTLE_DELAY).bind(this)
     );
 
     // When tab becomes active, sync distance
@@ -99,6 +99,7 @@ class MouseOdometer {
     const dy = Math.abs(oldY - newY);
     const move = Math.sqrt(dx ** 2 + dy ** 2);
     this.currentMove += move;
+    console.log(this.currentMove, 'this.currentMove');
     this.currentDistance += this.currentMove;
     this.throttledUpdate();
     this.renderDistance();
