@@ -71,6 +71,11 @@
   justify-content: center;
 }
 
+.mouse-odometer-options-container .title img#mouse-icon {
+  width: 60px;
+  height: 60px;
+}
+
 .mouse-odometer-options-container .amount {
   font-size: 16px;
   justify-content: center;

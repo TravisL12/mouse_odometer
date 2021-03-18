@@ -5,6 +5,7 @@ const history = document.getElementById('history');
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const version = document.getElementById('version');
 const selectedDate = document.getElementById('selected-date');
+const mouseIcon = document.getElementById('mouse-icon');
 const manifestData = chrome.runtime.getManifest();
 version.textContent = `v${manifestData.version}`;
 
@@ -112,11 +113,16 @@ const buildHistory = (options) => {
   });
 };
 
+const updateIcon = (distance) => {
+  mouseIcon.src = findTier(distance).path;
+};
+
 const updateDistance = () => {
   getStorage((options) => {
     if (options.previousDistances) {
       buildHistory(options);
     }
+    updateIcon(options.currentDistance);
     updateDisplay({
       distance: options.currentDistance,
       date: 'today',
