@@ -36,7 +36,6 @@ const getStorage = (cb) => {
 
 class MouseOdometer {
   constructor() {
-    this.currentMove = 0;
     this.lastMove = { x: 0, y: 0 };
     this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
     getStorage(this.buildOdometerWrapper.bind(this));
@@ -98,8 +97,7 @@ class MouseOdometer {
     const dx = Math.abs(oldX - newX);
     const dy = Math.abs(oldY - newY);
     const move = Math.sqrt(dx ** 2 + dy ** 2);
-    this.currentMove += move;
-    this.currentDistance += this.currentMove;
+    this.currentDistance += move;
     this.throttledUpdate();
     this.renderDistance();
     this.lastMove = { x: newX, y: newY };
@@ -121,7 +119,6 @@ class MouseOdometer {
         if (response?.isNewDay) {
           this.currentDistance = 0;
         }
-        this.currentMove = 0;
       })
       ?.bind(this);
   }
@@ -134,4 +131,4 @@ class MouseOdometer {
   }
 }
 
-(() => new MouseOdometer())();
+new MouseOdometer();
