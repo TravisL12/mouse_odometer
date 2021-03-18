@@ -99,7 +99,6 @@ class MouseOdometer {
     const dy = Math.abs(oldY - newY);
     const move = Math.sqrt(dx ** 2 + dy ** 2);
     this.currentMove += move;
-    console.log(this.currentMove, 'this.currentMove');
     this.currentDistance += this.currentMove;
     this.throttledUpdate();
     this.renderDistance();
@@ -122,9 +121,9 @@ class MouseOdometer {
         if (response?.isNewDay) {
           this.currentDistance = 0;
         }
+        this.currentMove = 0;
       })
       ?.bind(this);
-    this.currentMove = 0;
   }
 
   // Update on screen odometer
