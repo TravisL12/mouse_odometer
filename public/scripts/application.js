@@ -39,37 +39,9 @@ class MouseOdometer {
     this.lastMove = { x: 0, y: 0 };
     this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
     getStorage(this.buildOdometerWrapper.bind(this));
-
-    // Mouse movement listener
-    document.body.addEventListener(
-      'mousemove',
-      throttle(this.updateMove, THROTTLE_DELAY).bind(this)
-    );
-
-    // When tab becomes active, sync distance
-    document.addEventListener('visibilitychange', () => {
-      if (!document.hidden) {
-        this.syncDistance();
-      }
-    });
-
-    // When showOdometer setting changes hide/show odometer
-    chrome.storage.onChanged.addListener((changes) => {
-      if (changes.showOdometer?.newValue) {
-        this.buildOdometerWrapper({
-          showOdometer: changes.showOdometer.newValue,
-        });
-      } else if (
-        this.odometer &&
-        changes.showOdometer &&
-        !changes.showOdometer.newValue
-      ) {
-        this.odometerWrapper.remove();
-        delete this.odometer;
-      }
-    });
   }
 
+  // Builds odometer element
   buildOdometerWrapper(options) {
     if (options.showOdometer) {
       this.odometerWrapper = document.createElement('div');
@@ -103,16 +75,22 @@ class MouseOdometer {
     this.lastMove = { x: newX, y: newY };
   }
 
-  // Sync with chrome.storage
+  // Update on screen odometer
+  renderDistance() {
+    if (this.odometerWrapper && this.odometer) {
+      this.odometer.update(Math.round(this.currentDistance));
+    }
+  }
+
+  // Gets distance from chrome.storage
   syncDistance() {
     getStorage((options) => {
       const isNewDay = isDateInPast(new Date(options.currentDate), new Date());
       this.currentDistance = isNewDay ? 0 : options.currentDistance;
-      this.renderDistance();
     });
   }
 
-  // Updates chrome.storage with latest distance
+  // Sends distance to chrome.storage
   updateStorage() {
     chrome.runtime
       .sendMessage({ latestDistance: this.currentDistance }, (response) => {
@@ -122,13 +100,36 @@ class MouseOdometer {
       })
       ?.bind(this);
   }
-
-  // Update on screen odometer
-  renderDistance() {
-    if (this.odometerWrapper && this.odometer) {
-      this.odometer.update(Math.round(this.currentDistance));
-    }
-  }
 }
 
-new MouseOdometer();
+(() => {
+  const mouse = new MouseOdometer();
+
+  // Mouse movement listener
+  const throttled = throttle(mouse.updateMove, THROTTLE_DELAY).bind(mouse);
+  document.body.removeEventListener('mousemove', throttled);
+  document.body.addEventListener('mousemove', throttled);
+
+  // When tab becomes active, sync distance
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) {
+      mouse.syncDistance();
+    }
+  });
+
+  // When showOdometer setting changes hide/show odometer
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes.showOdometer?.newValue) {
+      mouse.buildOdometerWrapper({
+        showOdometer: changes.showOdometer.newValue,
+      });
+    } else if (
+      mouse.odometer &&
+      changes.showOdometer &&
+      !changes.showOdometer.newValue
+    ) {
+      mouse.odometerWrapper.remove();
+      delete mouse.odometer;
+    }
+  });
+})();
