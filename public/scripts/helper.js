@@ -38,7 +38,7 @@ const isDateInPast = (firstDate, secondDate) => {
   return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 };
 
-const TIER_INCREMENT = 100000;
+const TIER_INCREMENT = 10000;
 const tiers = {
   [WHITE]: { type: WHITE, path: 'public/images/mouse_icon_white.png' },
   [GREEN]: { type: GREEN, path: 'public/images/mouse_icon_green.png' },
@@ -50,13 +50,13 @@ export const findTier = (distance) => {
   if (distance > TIER_INCREMENT * 100) {
     return tiers[RED];
   }
-  if (distance > TIER_INCREMENT * 50) {
+  if (distance > TIER_INCREMENT * 75) {
     return tiers[YELLOW];
   }
-  if (distance > TIER_INCREMENT * 25) {
+  if (distance > TIER_INCREMENT * 50) {
     return tiers[BLUE];
   }
-  if (distance > TIER_INCREMENT * 10) {
+  if (distance > TIER_INCREMENT * 25) {
     return tiers[GREEN];
   }
   return tiers[WHITE]; // default
