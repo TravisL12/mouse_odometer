@@ -74,6 +74,7 @@
 .mouse-odometer-options-container .title img#mouse-icon {
   width: 60px;
   height: 60px;
+  filter: drop-shadow(0px 0px 10px var(--black));
 }
 
 .mouse-odometer-options-container .amount {
