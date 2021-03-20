@@ -116,12 +116,12 @@ const buildHistory = (options) => {
 const updateIcon = (distance) => {
   mouseIcon.src = findTier(distance).path;
 };
-const calcTotalDistance = (distances) => {
+const calcTotalDistance = (distances, currentDistance) => {
   const total = distances.reduce((acc, { distance }) => {
     return acc + distance;
   }, 0);
   totalDistance.textContent = `${Math.round(
-    total
+    total + currentDistance
   ).toLocaleString()} total pixels`;
 };
 const updateDistance = () => {
@@ -129,7 +129,7 @@ const updateDistance = () => {
     if (options.previousDistances) {
       buildHistory(options);
     }
-    calcTotalDistance(options.previousDistances);
+    calcTotalDistance(options.previousDistances, options.currentDistance);
     updateIcon(options.currentDistance);
     updateDisplay({
       distance: options.currentDistance,
