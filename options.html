@@ -15,11 +15,13 @@
   </head>
   <body>
     <div class="mouse-odometer-options-container">
-      <div class="box title">
+      <div class="box title-container">
         <img id="mouse-icon" src="public/images/mouse_icon_white.png" />
-        <span>Odometer!</span>
+        <div class="box column no-gap">
+          <span class="title">Odometer!</span>
+          <span id="total-distance"></span>
+        </div>
       </div>
-      <span id="total-distance"></span>
       <div class="box no-gap">
         <input type="checkbox" id="show-odometer" />
         <label for="show-odometer">Show Odometer</label>
@@ -30,12 +32,8 @@
       </div>
 
       <div class="box amount">
-        <div class="box">
-          <span id="selected-date"></span>
-        </div>
-        <div class="box column no-gap">
-          <span><span id="odometer"></span> pixels</span>
-        </div>
+        <span id="selected-date"></span>
+        <span><span id="odometer"></span> pixels</span>
       </div>
 
       <div class="about">
@@ -65,5 +63,6 @@
   </body>
   <script type="module" src="public/scripts/odometer.min.js"></script>
   <script type="module" src="public/scripts/helper.js"></script>
+  <script type="module" src="public/scripts/historyGraph.js"></script>
   <script type="module" src="public/scripts/options.js"></script>
 </html>

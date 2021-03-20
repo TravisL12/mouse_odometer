@@ -66,12 +66,15 @@
   flex-direction: column;
 }
 
-.mouse-odometer-options-container .title {
-  font-size: 36px;
+.mouse-odometer-options-container .title-container {
   justify-content: center;
 }
 
-.mouse-odometer-options-container .title img#mouse-icon {
+.mouse-odometer-options-container .title-container .title {
+  font-size: 36px;
+}
+
+.mouse-odometer-options-container .title-container img#mouse-icon {
   width: 60px;
   height: 60px;
   filter: drop-shadow(0px 0px 10px var(--black));
@@ -95,7 +98,10 @@
   font-family: Helvetica, sans-serif;
   display: inline-block;
 }
-
+.mouse-odometer-options-container .history .bar.selected {
+  stroke: var(--black);
+  stroke-width: 0.75px;
+}
 .mouse-odometer-options-container .history .bar.green {
   fill: var(--green);
 }
@@ -114,7 +120,7 @@
 }
 
 .mouse-odometer-options-container .history .bar:hover {
-  fill: var(--red);
+  opacity: 0.75;
 }
 
 .mouse-odometer-options-container .about {
