@@ -79,7 +79,6 @@ export const buildHistory = (options) => {
   const bars = selectBars();
   bars.forEach((barEl) => {
     barEl.addEventListener('click', (event) => {
-      console.log(event.target, 'event.target');
       bars.forEach((bar) => bar.classList.remove('selected'));
       barEl.classList.add('selected');
       const { distance, date } = event.target.dataset;
