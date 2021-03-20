@@ -6,6 +6,7 @@ const showOdometerCheckbox = document.getElementById('show-odometer');
 const version = document.getElementById('version');
 const selectedDate = document.getElementById('selected-date');
 const mouseIcon = document.getElementById('mouse-icon');
+const totalDistance = document.getElementById('total-distance');
 const manifestData = chrome.runtime.getManifest();
 version.textContent = `v${manifestData.version}`;
 
@@ -105,10 +106,9 @@ const buildHistory = (options) => {
 
   history.querySelectorAll('.bar').forEach((barEl) => {
     barEl.addEventListener('click', (event) => {
-      updateDisplay({
-        distance: event.target.dataset.distance,
-        date: event.target.dataset.date,
-      });
+      const { distance, date } = event.target.dataset;
+      updateIcon(distance);
+      updateDisplay({ distance, date });
     });
   });
 };
@@ -116,12 +116,20 @@ const buildHistory = (options) => {
 const updateIcon = (distance) => {
   mouseIcon.src = findTier(distance).path;
 };
-
+const calcTotalDistance = (distances) => {
+  const total = distances.reduce((acc, { distance }) => {
+    return acc + distance;
+  }, 0);
+  totalDistance.textContent = `${Math.round(
+    total
+  ).toLocaleString()} total pixels`;
+};
 const updateDistance = () => {
   getStorage((options) => {
     if (options.previousDistances) {
       buildHistory(options);
     }
+    calcTotalDistance(options.previousDistances);
     updateIcon(options.currentDistance);
     updateDisplay({
       distance: options.currentDistance,

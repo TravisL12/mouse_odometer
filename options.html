@@ -19,6 +19,7 @@
         <img id="mouse-icon" src="public/images/mouse_icon_white.png" />
         <span>Odometer!</span>
       </div>
+      <span id="total-distance"></span>
       <div class="box no-gap">
         <input type="checkbox" id="show-odometer" />
         <label for="show-odometer">Show Odometer</label>
@@ -27,12 +28,16 @@
       <div class="history-container">
         <div class="history" id="history"></div>
       </div>
+
       <div class="box amount">
-        <div class="box column no-gap">
-          <span><span id="odometer"></span> pixels</span>
+        <div class="box">
           <span id="selected-date"></span>
         </div>
+        <div class="box column no-gap">
+          <span><span id="odometer"></span> pixels</span>
+        </div>
       </div>
+
       <div class="about">
         <p>By The Trav <span id="version"></span></p>
         <ul>
