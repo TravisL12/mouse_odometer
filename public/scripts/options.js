@@ -24,6 +24,13 @@ const dateFormatOptions = {
   day: 'numeric',
 };
 
+// https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
+const pixelConversion = [
+  { label: 'miles', unit: 'mile', pixels: 6082560.7663069 },
+  { label: 'kilometers', unit: 'km', pixels: 3779528.0352161 },
+  { label: 'distance to moon', unit: 'moon', pixels: 1452858135793.2 },
+];
+
 showOdometerCheckbox.addEventListener('change', (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
@@ -37,13 +44,20 @@ export const updateDisplay = (values) => {
       : new Date(date).toLocaleDateString(undefined, dateFormatOptions);
 };
 
+let totalDistanceCalculated = 0;
+totalDistance.addEventListener('click', () => {
+  const conversion = pixelConversion[0];
+  totalDistance.textContent = `${(
+    totalDistanceCalculated / conversion.pixels
+  ).toLocaleString()} ${conversion.label}!!`;
+});
+
 const calcTotalDistance = (distances, currentDistance) => {
   const total = distances.reduce((acc, { distance }) => {
     return acc + distance;
   }, 0);
-  totalDistance.textContent = `${Math.round(
-    total + currentDistance
-  ).toLocaleString()} total pixels!`;
+  totalDistanceCalculated = Math.round(total + currentDistance);
+  totalDistance.textContent = `${totalDistanceCalculated.toLocaleString()} total pixels!`;
 };
 
 const updateDistance = () => {
