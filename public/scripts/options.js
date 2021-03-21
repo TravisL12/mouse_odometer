@@ -5,10 +5,9 @@ import { updateIcon, buildHistory } from './historyGraph.js';
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const selectedDate = document.getElementById('selected-date');
 const totalDistance = document.getElementById('total-distance');
-const version = document.getElementById('version');
 
 const manifestData = chrome.runtime.getManifest();
-version.textContent = `v${manifestData.version}`;
+document.getElementById('version').textContent = `v${manifestData.version}`;
 
 const odometer = new Odometer({
   el: document.getElementById('odometer'),
@@ -17,12 +16,6 @@ const odometer = new Odometer({
   theme: 'default',
   duration: 100,
 });
-
-const dateFormatOptions = {
-  year: 'numeric',
-  month: 'long',
-  day: 'numeric',
-};
 
 // https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
 const pixelConversion = [
@@ -46,7 +39,11 @@ export const updateDisplay = (values) => {
   selectedDate.textContent =
     date === 'today'
       ? 'Today'
-      : new Date(date).toLocaleDateString(undefined, dateFormatOptions);
+      : new Date(date).toLocaleDateString(undefined, {
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+        });
 };
 
 let totalDistanceCalculated = 0;
