@@ -1,8 +1,8 @@
 {
   "name": "Mouse Odometer",
-  "version": "1.0.0",
+  "version": "0.5.0",
   "manifest_version": 2,
-  "description": "How far will ya go!?!",
+  "description": "Keep track of the distance your mouse has moved!",
   "homepage_url": "http://www.redundantrobot.com",
   "web_accessible_resources": [
     "public/scripts/odometer.min.js",
