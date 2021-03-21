@@ -19,19 +19,15 @@ const odometer = new Odometer({
 
 // https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
 const pixelConversion = [
-  { label: 'total pixels', unit: 'pixel', pixels: 1 },
-  { label: 'miles in pixels', unit: 'mile', pixels: 6082560.7663069 },
-  { label: 'kilometers in pixels', unit: 'km', pixels: 3779528.0352161 },
+  { label: ' total pixels', unit: 'pixel', pixels: 1 },
+  { label: ' miles in pixels', unit: 'mile', pixels: 6082560.7663069 },
+  { label: ' kilometers in pixels', unit: 'km', pixels: 3779528.0352161 },
   {
-    label: '% distance to moon in pixels',
+    label: 'x distance to moon in pixels',
     unit: 'moon',
     pixels: 1452858135793.2,
   },
 ];
-
-showOdometerCheckbox.addEventListener('change', (event) => {
-  setStorage({ showOdometer: event.target.checked });
-});
 
 export const updateDisplay = (values) => {
   const { distance, date } = values;
@@ -48,22 +44,23 @@ export const updateDisplay = (values) => {
 
 let totalDistanceCalculated = 0;
 let conversionIndex = 0;
-const convertPixels = () => {
+const toggleTotalDistanceConversions = () => {
   const conversion = pixelConversion[conversionIndex % pixelConversion.length];
   conversionIndex++;
   totalDistance.textContent = `${(
     totalDistanceCalculated / conversion.pixels
-  ).toLocaleString()} ${conversion.label}!`;
+  ).toLocaleString()}${conversion.label}!`;
 };
 
-totalDistance.addEventListener('click', convertPixels);
+totalDistance.addEventListener('click', toggleTotalDistanceConversions);
+showOdometerCheckbox.addEventListener('change', (event) => {
+  setStorage({ showOdometer: event.target.checked });
+});
 
 const calcTotalDistance = (distances, currentDistance) => {
-  const total = distances.reduce((acc, { distance }) => {
-    return acc + distance;
-  }, 0);
+  const total = distances.reduce((acc, { distance }) => acc + distance, 0);
   totalDistanceCalculated = Math.round(total + currentDistance);
-  convertPixels();
+  toggleTotalDistanceConversions();
 };
 
 getStorage((options) => {
