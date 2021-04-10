@@ -19,7 +19,7 @@ const BLUE = 'blue';
 const YELLOW = 'yellow';
 const RED = 'red';
 
-const formatDate = (date) => {
+export const formatDate = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();

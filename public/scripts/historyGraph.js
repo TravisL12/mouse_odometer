@@ -1,4 +1,4 @@
-import { findTier } from './helper.js';
+import { formatDate, findTier } from './helper.js';
 import { updateDisplay } from './options.js';
 const history = document.getElementById('history');
 const mouseIcon = document.getElementById('mouse-icon');
@@ -10,13 +10,24 @@ const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 
+const getPreviousDays = () => {
+  const dates = [];
+  for (let i = 1; i < DAY_SLICE; i++) {
+    const today = new Date(new Date().setHours(0, 0, 0, 0));
+    const date = formatDate(new Date(today.setDate(today.getDate() - i)));
+    dates.push(date);
+  }
+  return dates;
+};
+
 export const updateIcon = (distance) => {
   mouseIcon.src = findTier(distance).path;
 };
 
 export const buildHistory = (options) => {
   const { previousDistances: historyData, currentDistance } = options;
-  const dataSlice = historyData.slice(-1 * DAY_SLICE);
+  const dataSlice = historyData;
+  const prevDays = getPreviousDays();
   const maxValue =
     Math.max.apply(
       null,
@@ -26,19 +37,23 @@ export const buildHistory = (options) => {
     ) || 1;
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
-  const todayXTranslate = dataSlice.length * (BAR_WIDTH + 1);
+  const todayXTranslate = prevDays.length * (BAR_WIDTH + 1);
 
-  const plot = dataSlice
-    .map(({ date, distance }, idx) => {
+  const plot = prevDays
+    .reverse()
+    .map((day, idx) => {
+      const dayData = dataSlice.find(({ date }) => date === day);
+      const distance = dayData?.distance || 0;
+      const date = dayData?.date || day;
       const height = (distance / maxValue) * BAR_HEIGHT;
       const yDist = BAR_HEIGHT - height;
       const xTranslate = idx + idx * BAR_WIDTH;
-      const formatttedDate = new Date(date).toLocaleDateString();
+      const formattedDate = new Date(date).toLocaleDateString();
       const formattedDistance = Math.round(distance).toLocaleString();
       const tier = findTier(distance).type;
       return `
       <g class="bar ${tier}" transform="translate(${xTranslate},0)">
-        <title id="title">${formattedDistance} - ${formatttedDate}</title>
+        <title id="title">${formattedDistance} - ${formattedDate}</title>
         <rect
           height="${height}"
           y="${yDist}"
