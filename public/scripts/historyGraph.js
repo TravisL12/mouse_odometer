@@ -10,6 +10,23 @@ const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 
+// SVG axes
+let axesPolyline = '';
+for (let i = 0; i < DAY_SLICE + 1; i++) {
+  axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
+}
+const axes = `
+    <polyline
+    marker-mid="url(#dot)"
+    stroke-width='1'
+    stroke='black'
+    points="${axesPolyline}"></polyline>
+  `;
+const marker = `
+  <marker id="dot" viewBox="0 0 10 10" refX="15" refY="5" markerWidth="5" markerHeight="5">
+    <circle cx="5" cy="5" r="5" fill="red" />
+  </marker>`;
+
 const getPreviousDays = () => {
   const dates = [];
   for (let i = 1; i < DAY_SLICE; i++) {
@@ -26,12 +43,11 @@ export const updateIcon = (distance) => {
 
 export const buildHistory = (options) => {
   const { previousDistances: historyData, currentDistance } = options;
-  const dataSlice = historyData;
   const prevDays = getPreviousDays();
   const maxValue =
     Math.max.apply(
       null,
-      [...dataSlice, { distance: currentDistance }].map(
+      [...historyData, { distance: currentDistance }].map(
         ({ distance }) => distance
       )
     ) || 1;
@@ -42,7 +58,7 @@ export const buildHistory = (options) => {
   const plot = prevDays
     .reverse()
     .map((day, idx) => {
-      const dayData = dataSlice.find(({ date }) => date === day);
+      const dayData = historyData.find(({ date }) => date === day);
       const distance = dayData?.distance || 0;
       const date = dayData?.date || day;
       const height = (distance / maxValue) * BAR_HEIGHT;
@@ -87,8 +103,12 @@ export const buildHistory = (options) => {
       aria-labelledby="title"
       role="img"
     >
+      <defs>
+        ${marker}
+      </defs>
       ${plot ?? ''}
       ${todayPlot}
+      ${axes}
     </svg>`;
 
   const bars = selectBars();
