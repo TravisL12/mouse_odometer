@@ -70,6 +70,7 @@ export const buildHistory = (options) => {
         <title id="title">${formattedDistance} - ${formattedDate}</title>
         <rect
           height="${height}"
+          x="1"
           y="${yDist}"
           width="${BAR_WIDTH}"
           data-date="${date}"
@@ -81,7 +82,7 @@ export const buildHistory = (options) => {
   const todayPlot = `
       <g class="bar ${
         findTier(currentDistance).type
-      } today selected" transform="translate(${todayXTranslate},0)">
+      } today selected" transform="translate(${todayXTranslate + 1},0)">
         <title id="title">Today! - ${Math.round(
           currentDistance
         ).toLocaleString()}</title>
@@ -102,7 +103,7 @@ export const buildHistory = (options) => {
       role="img"
     >
       <defs>
-        <marker id="dot" viewBox="0 0 10 10" refX="12.5" refY="2" markerWidth="5" markerHeight="50">
+        <marker id="dot" viewBox="0 0 10 10" refX="0" refY="0" markerWidth="5" markerHeight="50">
           <rect height="10" width="2"></rect>
         </marker>
       </defs>
