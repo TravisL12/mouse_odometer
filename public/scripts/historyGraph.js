@@ -17,15 +17,13 @@ for (let i = 0; i < DAY_SLICE + 1; i++) {
 }
 const axes = `
     <polyline
+    marker-start="url(#dot)"
     marker-mid="url(#dot)"
+    marker-end="url(#dot)"
     stroke-width='1'
     stroke='black'
     points="${axesPolyline}"></polyline>
   `;
-const marker = `
-  <marker id="dot" viewBox="0 0 10 10" refX="15" refY="5" markerWidth="5" markerHeight="5">
-    <circle cx="5" cy="5" r="5" fill="red" />
-  </marker>`;
 
 const getPreviousDays = () => {
   const dates = [];
@@ -104,7 +102,9 @@ export const buildHistory = (options) => {
       role="img"
     >
       <defs>
-        ${marker}
+        <marker id="dot" viewBox="0 0 10 10" refX="12.5" refY="2" markerWidth="5" markerHeight="50">
+          <rect height="10" width="2"></rect>
+        </marker>
       </defs>
       ${plot ?? ''}
       ${todayPlot}
