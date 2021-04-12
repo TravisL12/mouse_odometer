@@ -3,6 +3,9 @@ import { updateDisplay } from './options.js';
 const history = document.getElementById('history');
 const mouseIcon = document.getElementById('mouse-icon');
 const selectBars = () => history.querySelectorAll('.bar');
+const black = getComputedStyle(
+  document.querySelector('.mouse-odometer-options-container')
+).getPropertyValue('--black');
 
 // graph values
 const CONTAINER_WIDTH = 300;
@@ -21,7 +24,7 @@ const axes = `
     marker-mid="url(#dot)"
     marker-end="url(#dot)"
     stroke-width='1'
-    stroke='black'
+    stroke=${black}
     points="${axesPolyline}"></polyline>
   `;
 
@@ -104,7 +107,7 @@ export const buildHistory = (options) => {
     >
       <defs>
         <marker id="dot" viewBox="0 0 10 10" refX="0" refY="0" markerWidth="5" markerHeight="50">
-          <rect height="10" width="2"></rect>
+          <rect height="10" width="2" fill=${black}></rect>
         </marker>
       </defs>
       ${plot ?? ''}
