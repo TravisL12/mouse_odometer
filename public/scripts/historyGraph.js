@@ -1,8 +1,11 @@
-import { findTier } from './helper.js';
+import { formatDate, findTier } from './helper.js';
 import { updateDisplay } from './options.js';
 const history = document.getElementById('history');
 const mouseIcon = document.getElementById('mouse-icon');
 const selectBars = () => history.querySelectorAll('.bar');
+const black = getComputedStyle(
+  document.querySelector('.mouse-odometer-options-container')
+).getPropertyValue('--black');
 
 // graph values
 const CONTAINER_WIDTH = 300;
@@ -10,37 +13,67 @@ const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 
-export const updateIcon = (distance) => {
-  mouseIcon.src = findTier(distance).path;
+// SVG axes
+let axesPolyline = '';
+for (let i = 0; i < DAY_SLICE + 1; i++) {
+  axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
+}
+const axes = `
+    <polyline
+    marker-start="url(#dot)"
+    marker-mid="url(#dot)"
+    marker-end="url(#dot)"
+    stroke-width='1'
+    stroke=${black}
+    points="${axesPolyline}"></polyline>
+  `;
+
+const getPreviousDays = () => {
+  const dates = [];
+  for (let i = 1; i < DAY_SLICE; i++) {
+    const today = new Date(new Date().setHours(0, 0, 0, 0));
+    const date = formatDate(new Date(today.setDate(today.getDate() - i)));
+    dates.push(date);
+  }
+  return dates;
+};
+
+export const updateIcon = (path) => {
+  mouseIcon.src = path;
 };
 
 export const buildHistory = (options) => {
   const { previousDistances: historyData, currentDistance } = options;
-  const dataSlice = historyData.slice(-1 * DAY_SLICE);
+  const prevDays = getPreviousDays();
   const maxValue =
     Math.max.apply(
       null,
-      [...dataSlice, { distance: currentDistance }].map(
+      [...historyData, { distance: currentDistance }].map(
         ({ distance }) => distance
       )
     ) || 1;
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
-  const todayXTranslate = dataSlice.length * (BAR_WIDTH + 1);
+  const todayXTranslate = prevDays.length * (BAR_WIDTH + 1);
 
-  const plot = dataSlice
-    .map(({ date, distance }, idx) => {
+  const plot = prevDays
+    .reverse()
+    .map((day, idx) => {
+      const dayData = historyData.find(({ date }) => date === day);
+      const distance = dayData?.distance || 0;
+      const date = dayData?.date || day;
       const height = (distance / maxValue) * BAR_HEIGHT;
       const yDist = BAR_HEIGHT - height;
       const xTranslate = idx + idx * BAR_WIDTH;
-      const formatttedDate = new Date(date).toLocaleDateString();
+      const formattedDate = new Date(date).toLocaleDateString();
       const formattedDistance = Math.round(distance).toLocaleString();
       const tier = findTier(distance).type;
       return `
       <g class="bar ${tier}" transform="translate(${xTranslate},0)">
-        <title id="title">${formattedDistance} - ${formatttedDate}</title>
+        <title id="title">${formattedDistance} - ${formattedDate}</title>
         <rect
           height="${height}"
+          x="1"
           y="${yDist}"
           width="${BAR_WIDTH}"
           data-date="${date}"
@@ -52,7 +85,7 @@ export const buildHistory = (options) => {
   const todayPlot = `
       <g class="bar ${
         findTier(currentDistance).type
-      } today selected" transform="translate(${todayXTranslate},0)">
+      } today selected" transform="translate(${todayXTranslate + 1},0)">
         <title id="title">Today! - ${Math.round(
           currentDistance
         ).toLocaleString()}</title>
@@ -72,8 +105,14 @@ export const buildHistory = (options) => {
       aria-labelledby="title"
       role="img"
     >
+      <defs>
+        <marker id="dot" viewBox="0 0 10 10" refX="0" refY="0" markerWidth="5" markerHeight="50">
+          <rect height="10" width="2" fill=${black}></rect>
+        </marker>
+      </defs>
       ${plot ?? ''}
       ${todayPlot}
+      ${axes}
     </svg>`;
 
   const bars = selectBars();

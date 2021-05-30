@@ -13,10 +13,11 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
       request.latestDistance > settings.currentDistance && !settings.isNewDay
         ? request.latestDistance
         : settings.currentDistance;
-    const iconPath = findTier(newDistance).path;
+    const currentTier = findTier(newDistance);
+    const iconPath = currentTier.path;
     chrome.browserAction.setIcon({ path: iconPath });
     setStorage({ ...settings, currentDistance: newDistance });
-    sendResponse({ ...settings });
+    sendResponse({ ...settings, currentTier });
   });
   return true;
 });

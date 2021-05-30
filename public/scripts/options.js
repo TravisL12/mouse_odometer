@@ -1,10 +1,13 @@
-import { setStorage, getStorage } from './helper.js';
+import { setStorage, getStorage, findTier } from './helper.js';
 import { updateIcon, buildHistory } from './historyGraph.js';
 
 // elements
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const selectedDate = document.getElementById('selected-date');
 const totalDistance = document.getElementById('total-distance');
+const optionsContainer = document.querySelector(
+  '.mouse-odometer-options-container'
+);
 
 const manifestData = chrome.runtime.getManifest();
 document.getElementById('version').textContent = `v${manifestData.version}`;
@@ -18,14 +21,16 @@ const odometer = new Odometer({
 });
 
 // https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
+const PIXEL_MILES = 6082560.7663069;
+const PIXEL_KM = 3779528.0352161;
 const pixelConversion = [
   { label: ' total pixels', unit: 'pixel', pixels: 1 },
-  { label: ' miles in pixels', unit: 'mile', pixels: 6082560.7663069 },
-  { label: ' kilometers in pixels', unit: 'km', pixels: 3779528.0352161 },
+  { label: ' miles in pixels', unit: 'mile', pixels: PIXEL_MILES },
+  { label: ' kilometers in pixels', unit: 'km', pixels: PIXEL_KM },
   {
     label: 'x distance to moon in pixels',
     unit: 'moon',
-    pixels: 1452858135793.2,
+    pixels: 238855 * PIXEL_MILES, // 238,855 miles to moon
   },
 ];
 
@@ -46,6 +51,7 @@ let totalDistanceCalculated = 0;
 let conversionIndex = 0;
 const toggleTotalDistanceConversions = () => {
   const conversion = pixelConversion[conversionIndex % pixelConversion.length];
+  setStorage({ conversionIndex });
   conversionIndex++;
   totalDistance.textContent = `${(
     totalDistanceCalculated / conversion.pixels
@@ -67,8 +73,11 @@ getStorage((options) => {
   if (options.previousDistances) {
     buildHistory(options);
   }
+  conversionIndex = options.conversionIndex || 0;
   calcTotalDistance(options.previousDistances, options.currentDistance);
-  updateIcon(options.currentDistance);
+  const currentTier = findTier(options.currentDistance);
+  updateIcon(currentTier.path);
+  optionsContainer.classList.add(`background-${currentTier.background}`);
   updateDisplay({
     distance: options.currentDistance,
     date: 'today',

@@ -3,6 +3,7 @@ export const SETTING_VALUES = [
   'currentDistance',
   'currentDate',
   'previousDistances',
+  'conversionIndex',
 ];
 
 export const setStorage = (options) => {
@@ -19,7 +20,7 @@ const BLUE = 'blue';
 const YELLOW = 'yellow';
 const RED = 'red';
 
-const formatDate = (date) => {
+export const formatDate = (date) => {
   const year = date.getFullYear();
   const month = date.getMonth() + 1;
   const day = date.getDate();
@@ -40,11 +41,27 @@ const isDateInPast = (firstDate, secondDate) => {
 
 const TIER_INCREMENT = 10000;
 const tiers = {
-  [WHITE]: { type: WHITE, path: 'public/images/mouse_icon_white.png' },
-  [GREEN]: { type: GREEN, path: 'public/images/mouse_icon_green.png' },
-  [BLUE]: { type: BLUE, path: 'public/images/mouse_icon_blue.png' },
-  [YELLOW]: { type: YELLOW, path: 'public/images/mouse_icon_yellow.png' },
-  [RED]: { type: RED, path: 'public/images/mouse_icon_red.png' },
+  [WHITE]: {
+    type: WHITE,
+    background: 1,
+    path: 'public/images/mouse_icon_white.png',
+  },
+  [GREEN]: {
+    type: GREEN,
+    background: 2,
+    path: 'public/images/mouse_icon_green.png',
+  },
+  [BLUE]: {
+    type: BLUE,
+    background: 3,
+    path: 'public/images/mouse_icon_blue.png',
+  },
+  [YELLOW]: {
+    type: YELLOW,
+    background: 4,
+    path: 'public/images/mouse_icon_yellow.png',
+  },
+  [RED]: { type: RED, background: 5, path: 'public/images/mouse_icon_red.png' },
 };
 export const findTier = (distance) => {
   if (distance > TIER_INCREMENT * 100) {

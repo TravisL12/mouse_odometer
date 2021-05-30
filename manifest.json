@@ -1,8 +1,8 @@
 {
   "name": "Mouse Odometer",
-  "version": "1.0.0",
+  "version": "0.6.0",
   "manifest_version": 2,
-  "description": "How far will ya go!?!",
+  "description": "Keep track of the distance your mouse has moved!",
   "homepage_url": "http://www.redundantrobot.com",
   "web_accessible_resources": [
     "public/scripts/odometer.min.js",
@@ -32,9 +32,13 @@
   ],
   "browser_action": {
     "default_title": "Mouse Odometer!",
-    "default_popup": "options.html"
+    "default_popup": "options.html",
+    "default_icon": "public/images/mouse_icon_white.png"
   },
-
+  "icons": {
+    "16": "public/images/mouse_icon_white.png",
+    "128": "public/images/mouse_icon_white.png"
+  },
   "options_ui": {
     "page": "options.html",
     "open_in_tab": false
