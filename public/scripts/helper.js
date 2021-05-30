@@ -3,6 +3,7 @@ export const SETTING_VALUES = [
   'currentDistance',
   'currentDate',
   'previousDistances',
+  'conversionIndex',
 ];
 
 export const setStorage = (options) => {

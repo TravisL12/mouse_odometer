@@ -48,6 +48,7 @@ let totalDistanceCalculated = 0;
 let conversionIndex = 0;
 const toggleTotalDistanceConversions = () => {
   const conversion = pixelConversion[conversionIndex % pixelConversion.length];
+  setStorage({ conversionIndex });
   conversionIndex++;
   totalDistance.textContent = `${(
     totalDistanceCalculated / conversion.pixels
@@ -69,6 +70,7 @@ getStorage((options) => {
   if (options.previousDistances) {
     buildHistory(options);
   }
+  conversionIndex = options.conversionIndex || 0;
   calcTotalDistance(options.previousDistances, options.currentDistance);
   updateIcon(options.currentDistance);
   updateDisplay({
