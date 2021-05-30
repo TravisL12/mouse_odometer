@@ -38,8 +38,8 @@ const getPreviousDays = () => {
   return dates;
 };
 
-export const updateIcon = (distance) => {
-  mouseIcon.src = findTier(distance).path;
+export const updateIcon = (path) => {
+  mouseIcon.src = path;
 };
 
 export const buildHistory = (options) => {

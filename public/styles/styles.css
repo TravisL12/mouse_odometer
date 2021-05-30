@@ -35,10 +35,41 @@
   gap: 10px;
   padding: 10px;
   min-width: 300px;
+}
+
+.background-1 {
   background: linear-gradient(
     336deg,
-    var(--gradient-color-one) 0%,
-    var(--red) 44%,
+    var(--transparent-black) 0%,
+    var(--gradient-color-three) 100%
+  );
+}
+
+.background-2 {
+  background: linear-gradient(
+    336deg,
+    var(--green) 0%,
+    var(--gradient-color-three) 100%
+  );
+}
+.background-3 {
+  background: linear-gradient(
+    336deg,
+    var(--blue) 0%,
+    var(--gradient-color-three) 100%
+  );
+}
+.background-4 {
+  background: linear-gradient(
+    336deg,
+    var(--red) 0%,
+    var(--gradient-color-three) 100%
+  );
+}
+.background-5 {
+  background: linear-gradient(
+    336deg,
+    var(--red-bar) 0%,
     var(--gradient-color-three) 100%
   );
 }

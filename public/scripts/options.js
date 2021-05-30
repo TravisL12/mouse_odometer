@@ -1,10 +1,13 @@
-import { setStorage, getStorage } from './helper.js';
+import { setStorage, getStorage, findTier } from './helper.js';
 import { updateIcon, buildHistory } from './historyGraph.js';
 
 // elements
 const showOdometerCheckbox = document.getElementById('show-odometer');
 const selectedDate = document.getElementById('selected-date');
 const totalDistance = document.getElementById('total-distance');
+const optionsContainer = document.querySelector(
+  '.mouse-odometer-options-container'
+);
 
 const manifestData = chrome.runtime.getManifest();
 document.getElementById('version').textContent = `v${manifestData.version}`;
@@ -72,7 +75,9 @@ getStorage((options) => {
   }
   conversionIndex = options.conversionIndex || 0;
   calcTotalDistance(options.previousDistances, options.currentDistance);
-  updateIcon(options.currentDistance);
+  const currentTier = findTier(options.currentDistance);
+  updateIcon(currentTier.path);
+  optionsContainer.classList.add(`background-${currentTier.background}`);
   updateDisplay({
     distance: options.currentDistance,
     date: 'today',
