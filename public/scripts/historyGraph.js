@@ -121,7 +121,8 @@ export const buildHistory = (options) => {
       bars.forEach((bar) => bar.classList.remove('selected'));
       barEl.classList.add('selected');
       const { distance, date } = event.target.dataset;
-      updateIcon(distance);
+      const currentTier = findTier(distance);
+      updateIcon(currentTier.path);
       updateDisplay({ distance, date });
     });
   });
@@ -134,7 +135,8 @@ history.addEventListener('click', (event) => {
     const todayBar = document.querySelector('.bar.today');
     todayBar.classList.add('selected');
     const { distance, date } = todayBar.querySelector('rect').dataset;
-    updateIcon(distance);
+    const currentTier = findTier(distance);
+    updateIcon(currentTier.path);
     updateDisplay({ distance, date });
   }
 });
