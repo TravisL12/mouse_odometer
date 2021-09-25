@@ -2,6 +2,7 @@
 .mouse-odometer-options-container {
   --red: #ff9090;
   --black: #333333;
+  --lightgreen: rgb(149, 255, 149);
   --green: rgb(81, 255, 81);
   --blue: rgb(111, 185, 255);
   --red-bar: #e20606;
@@ -64,7 +65,7 @@
 .background-2 {
   background: linear-gradient(
     336deg,
-    var(--green) 0%,
+    var(--lightgreen) 0%,
     var(--gradient-color-three) 100%
   );
 }
@@ -122,7 +123,7 @@
 }
 
 .mouse-odometer-options-container .title-container .title {
-  font-family: 'Gill Sans', 'Gill Sans MT', Calibri, 'Trebuchet MS', sans-serif;
+  font-family: "Gill Sans", "Gill Sans MT", Calibri, "Trebuchet MS", sans-serif;
   text-transform: uppercase;
   font-size: 36px;
 }

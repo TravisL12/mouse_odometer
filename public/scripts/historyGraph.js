@@ -1,11 +1,10 @@
-import { formatDate, findTier } from './helper.js';
-import { updateDisplay } from './options.js';
-const history = document.getElementById('history');
-const mouseIcon = document.getElementById('mouse-icon');
-const selectBars = () => history.querySelectorAll('.bar');
-const black = getComputedStyle(
-  document.querySelector('.mouse-odometer-options-container')
-).getPropertyValue('--black');
+import { formatDate, findTier, APPLICATION_CLASSNAME } from "./helper.js";
+import { updateDisplay } from "./options.js";
+const history = document.getElementById("history");
+const mouseIcon = document.getElementById("mouse-icon");
+const selectBars = () => history.querySelectorAll(".bar");
+const odometerContainer = document.querySelector(APPLICATION_CLASSNAME);
+const black = getComputedStyle(odometerContainer).getPropertyValue("--black");
 
 // graph values
 const CONTAINER_WIDTH = 300;
@@ -14,7 +13,7 @@ const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 
 // SVG axes
-let axesPolyline = '';
+let axesPolyline = "";
 for (let i = 0; i < DAY_SLICE + 1; i++) {
   axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
 }
@@ -80,7 +79,7 @@ export const buildHistory = (options) => {
           data-distance="${distance}"></rect>
       </g>`;
     })
-    .join('');
+    .join("");
 
   const todayPlot = `
       <g class="bar ${
@@ -110,18 +109,20 @@ export const buildHistory = (options) => {
           <rect height="10" width="2" fill=${black}></rect>
         </marker>
       </defs>
-      ${plot ?? ''}
+      ${plot ?? ""}
       ${todayPlot}
       ${axes}
     </svg>`;
 
   const bars = selectBars();
   bars.forEach((barEl) => {
-    barEl.addEventListener('click', (event) => {
-      bars.forEach((bar) => bar.classList.remove('selected'));
-      barEl.classList.add('selected');
+    barEl.addEventListener("click", (event) => {
+      bars.forEach((bar) => bar.classList.remove("selected"));
+      barEl.classList.add("selected");
       const { distance, date } = event.target.dataset;
       const currentTier = findTier(distance);
+      odometerContainer.classList = APPLICATION_CLASSNAME;
+      odometerContainer.classList.add(`background-${currentTier.background}`);
       updateIcon(currentTier.path);
       updateDisplay({ distance, date });
     });
@@ -129,13 +130,15 @@ export const buildHistory = (options) => {
 };
 
 // click anywhere in history box selects 'today'
-history.addEventListener('click', (event) => {
-  if (event.target.nodeName === 'svg') {
-    selectBars().forEach((bar) => bar.classList.remove('selected'));
-    const todayBar = document.querySelector('.bar.today');
-    todayBar.classList.add('selected');
-    const { distance, date } = todayBar.querySelector('rect').dataset;
+history.addEventListener("click", (event) => {
+  if (event.target.nodeName === "svg") {
+    selectBars().forEach((bar) => bar.classList.remove("selected"));
+    const todayBar = document.querySelector(".bar.today");
+    todayBar.classList.add("selected");
+    const { distance, date } = todayBar.querySelector("rect").dataset;
     const currentTier = findTier(distance);
+    odometerContainer.classList = APPLICATION_CLASSNAME;
+    odometerContainer.classList.add(`background-${currentTier.background}`);
     updateIcon(currentTier.path);
     updateDisplay({ distance, date });
   }
