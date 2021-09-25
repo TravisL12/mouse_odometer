@@ -22,7 +22,7 @@
   right: 10px;
   z-index: 1000000;
   font-weight: 700;
-  mix-blend-mode: difference;
+  opacity: 0.8;
   font-size: 18px;
   line-height: 18px;
 }
