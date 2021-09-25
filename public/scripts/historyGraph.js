@@ -3,7 +3,7 @@ import { updateDisplay } from "./options.js";
 const history = document.getElementById("history");
 const mouseIcon = document.getElementById("mouse-icon");
 const selectBars = () => history.querySelectorAll(".bar");
-const odometerContainer = document.querySelector(APPLICATION_CLASSNAME);
+const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 const black = getComputedStyle(odometerContainer).getPropertyValue("--black");
 
 // graph values
@@ -39,6 +39,11 @@ const getPreviousDays = () => {
 
 export const updateIcon = (path) => {
   mouseIcon.src = path;
+};
+
+const setBackgroundColor = (currentTier) => {
+  odometerContainer.classList = APPLICATION_CLASSNAME;
+  odometerContainer.classList.add(`background-${currentTier.background}`);
 };
 
 export const buildHistory = (options) => {
@@ -121,8 +126,7 @@ export const buildHistory = (options) => {
       barEl.classList.add("selected");
       const { distance, date } = event.target.dataset;
       const currentTier = findTier(distance);
-      odometerContainer.classList = APPLICATION_CLASSNAME;
-      odometerContainer.classList.add(`background-${currentTier.background}`);
+      setBackgroundColor(currentTier);
       updateIcon(currentTier.path);
       updateDisplay({ distance, date });
     });
@@ -137,8 +141,7 @@ history.addEventListener("click", (event) => {
     todayBar.classList.add("selected");
     const { distance, date } = todayBar.querySelector("rect").dataset;
     const currentTier = findTier(distance);
-    odometerContainer.classList = APPLICATION_CLASSNAME;
-    odometerContainer.classList.add(`background-${currentTier.background}`);
+    setBackgroundColor(currentTier);
     updateIcon(currentTier.path);
     updateDisplay({ distance, date });
   }
