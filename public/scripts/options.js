@@ -10,7 +10,7 @@ import { updateIcon, buildHistory } from "./historyGraph.js";
 const showOdometerCheckbox = document.getElementById("show-odometer");
 const selectedDate = document.getElementById("selected-date");
 const totalDistance = document.getElementById("total-distance");
-const odometerContainer = document.querySelector(APPLICATION_CLASSNAME);
+const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 
 const manifestData = chrome.runtime.getManifest();
 document.getElementById("version").textContent = `v${manifestData.version}`;

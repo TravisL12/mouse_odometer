@@ -7,39 +7,11 @@ export const SETTING_VALUES = [
   "conversionIndex",
 ];
 
-export const setStorage = (options) => {
-  chrome.storage.sync.set(options);
-};
-
-export const getStorage = (cb) => {
-  chrome.storage.sync.get(SETTING_VALUES, cb);
-};
-
 const WHITE = "white";
 const GREEN = "green";
 const BLUE = "blue";
 const YELLOW = "yellow";
 const RED = "red";
-
-export const formatDate = (date) => {
-  const year = date.getFullYear();
-  const month = date.getMonth() + 1;
-  const day = date.getDate();
-
-  return `${year}-${month}-${day}`;
-};
-
-const DEFAULT_VALUES = {
-  showOdometer: false,
-  currentDistance: 0,
-  currentDate: formatDate(new Date()),
-  previousDistances: [],
-};
-
-const isDateInPast = (firstDate, secondDate) => {
-  return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
-};
-
 const TIER_INCREMENT = 10000;
 const tiers = {
   [WHITE]: {
@@ -64,6 +36,34 @@ const tiers = {
   },
   [RED]: { type: RED, background: 5, path: "public/images/mouse_icon_red.png" },
 };
+
+export const setStorage = (options) => {
+  chrome.storage.sync.set(options);
+};
+
+export const getStorage = (cb) => {
+  chrome.storage.sync.get(SETTING_VALUES, cb);
+};
+
+export const formatDate = (date) => {
+  const year = date.getFullYear();
+  const month = date.getMonth() + 1;
+  const day = date.getDate();
+
+  return `${year}-${month}-${day}`;
+};
+
+const DEFAULT_VALUES = {
+  showOdometer: false,
+  currentDistance: 0,
+  currentDate: formatDate(new Date()),
+  previousDistances: [],
+};
+
+const isDateInPast = (firstDate, secondDate) => {
+  return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
+};
+
 export const findTier = (distance) => {
   if (distance > TIER_INCREMENT * 100) {
     return tiers[RED];
