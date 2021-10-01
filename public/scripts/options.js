@@ -1,22 +1,25 @@
-import { setStorage, getStorage, findTier } from './helper.js';
-import { updateIcon, buildHistory } from './historyGraph.js';
+import {
+  setStorage,
+  getStorage,
+  findTier,
+  APPLICATION_CLASSNAME,
+} from "./helper.js";
+import { updateIcon, buildHistory } from "./historyGraph.js";
 
 // elements
-const showOdometerCheckbox = document.getElementById('show-odometer');
-const selectedDate = document.getElementById('selected-date');
-const totalDistance = document.getElementById('total-distance');
-const optionsContainer = document.querySelector(
-  '.mouse-odometer-options-container'
-);
+const showOdometerCheckbox = document.getElementById("show-odometer");
+const selectedDate = document.getElementById("selected-date");
+const totalDistance = document.getElementById("total-distance");
+const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 
 const manifestData = chrome.runtime.getManifest();
-document.getElementById('version').textContent = `v${manifestData.version}`;
+document.getElementById("version").textContent = `v${manifestData.version}`;
 
 const odometer = new Odometer({
-  el: document.getElementById('odometer'),
+  el: document.getElementById("odometer"),
   value: 0,
-  format: ',ddd',
-  theme: 'default',
+  format: ",ddd",
+  theme: "default",
   duration: 100,
 });
 
@@ -24,12 +27,12 @@ const odometer = new Odometer({
 const PIXEL_MILES = 6082560.7663069;
 const PIXEL_KM = 3779528.0352161;
 const pixelConversion = [
-  { label: ' total pixels', unit: 'pixel', pixels: 1 },
-  { label: ' miles in pixels', unit: 'mile', pixels: PIXEL_MILES },
-  { label: ' kilometers in pixels', unit: 'km', pixels: PIXEL_KM },
+  { label: " total pixels", unit: "pixel", pixels: 1 },
+  { label: " miles in pixels", unit: "mile", pixels: PIXEL_MILES },
+  { label: " kilometers in pixels", unit: "km", pixels: PIXEL_KM },
   {
-    label: 'x distance to moon in pixels',
-    unit: 'moon',
+    label: "x distance to moon in pixels",
+    unit: "moon",
     pixels: 238855 * PIXEL_MILES, // 238,855 miles to moon
   },
 ];
@@ -38,12 +41,12 @@ export const updateDisplay = (values) => {
   const { distance, date } = values;
   odometer.update(Math.round(distance || 0));
   selectedDate.textContent =
-    date === 'today'
-      ? 'Today'
+    date === "today"
+      ? "Today"
       : new Date(date).toLocaleDateString(undefined, {
-          year: 'numeric',
-          month: 'long',
-          day: 'numeric',
+          year: "numeric",
+          month: "long",
+          day: "numeric",
         });
 };
 
@@ -58,8 +61,8 @@ const toggleTotalDistanceConversions = () => {
   ).toLocaleString()}${conversion.label}!`;
 };
 
-totalDistance.addEventListener('click', toggleTotalDistanceConversions);
-showOdometerCheckbox.addEventListener('change', (event) => {
+totalDistance.addEventListener("click", toggleTotalDistanceConversions);
+showOdometerCheckbox.addEventListener("change", (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
 
@@ -77,10 +80,10 @@ getStorage((options) => {
   calcTotalDistance(options.previousDistances, options.currentDistance);
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
-  optionsContainer.classList.add(`background-${currentTier.background}`);
+  odometerContainer.classList.add(`background-${currentTier.background}`);
   updateDisplay({
     distance: options.currentDistance,
-    date: 'today',
+    date: "today",
   });
   showOdometerCheckbox.checked = options.showOdometer || false;
 });
