@@ -60,7 +60,10 @@ const DEFAULT_VALUES = {
   previousDistances: [],
 };
 
-const isDateInPast = (firstDate, secondDate) => {
+// date is `YYYY-mm-dd` string, I miss you TS :'(
+const isDateInPast = (date) => {
+  const firstDate = new Date(date.split("-"));
+  const secondDate = new Date();
   return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 };
 
@@ -87,7 +90,7 @@ export const buildSettings = (options) => {
   let previousDistances =
     options.previousDistances || DEFAULT_VALUES.previousDistances;
 
-  const isNewDay = isDateInPast(new Date(date), new Date());
+  const isNewDay = isDateInPast(date);
   if (isNewDay) {
     previousDistances.push({ date, distance: options.currentDistance });
     date = formatDate(new Date());

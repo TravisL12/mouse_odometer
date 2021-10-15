@@ -24,13 +24,16 @@
     };
   };
 
-  const isDateInPast = (firstDate, secondDate) => {
+  // date is `YYYY-mm-dd` string, I miss you TS :'(
+  const isDateInPast = (date) => {
+    const firstDate = new Date(date.split("-"));
+    const secondDate = new Date();
     return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
   };
 
   const getStorage = (cb) => {
     chrome.storage.sync.get(
-      ['currentDistance', 'showOdometer', 'currentDate'],
+      ["currentDistance", "showOdometer", "currentDate"],
       cb
     );
   };
@@ -45,18 +48,18 @@
     // Builds odometer element
     buildOdometerWrapper(options) {
       if (options.showOdometer) {
-        this.odometerWrapper = document.createElement('div');
-        this.odometerWrapper.classList = 'mouse-odometer-distance';
+        this.odometerWrapper = document.createElement("div");
+        this.odometerWrapper.classList = "mouse-odometer-distance";
         this.currentDistance =
           options.currentDistance || this.currentDistance || 0;
-        const odomTarget = document.createElement('div');
+        const odomTarget = document.createElement("div");
         this.odometerWrapper.appendChild(odomTarget);
         document.body.appendChild(this.odometerWrapper);
         this.odometer = new Odometer({
           el: odomTarget,
           value: this.currentDistance,
-          format: ',ddd',
-          theme: 'default',
+          format: ",ddd",
+          theme: "default",
           duration: 1000,
         });
         this.syncDistance();
@@ -86,10 +89,7 @@
     // Gets distance from chrome.storage
     syncDistance() {
       getStorage((options) => {
-        const isNewDay = isDateInPast(
-          new Date(options.currentDate),
-          new Date()
-        );
+        const isNewDay = isDateInPast(options.currentDate);
         this.currentDistance = isNewDay ? 0 : options.currentDistance;
       });
     }
@@ -114,11 +114,11 @@
 
   // Mouse movement listener
   const throttled = throttle(mouse.updateMove, THROTTLE_DELAY).bind(mouse);
-  document.body.removeEventListener('mousemove', throttled);
-  document.body.addEventListener('mousemove', throttled);
+  document.body.removeEventListener("mousemove", throttled);
+  document.body.addEventListener("mousemove", throttled);
 
   // When tab becomes active, sync distance
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener("visibilitychange", () => {
     if (!document.hidden) {
       mouse.syncDistance();
     }
