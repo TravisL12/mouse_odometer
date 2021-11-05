@@ -1,5 +1,5 @@
 import { formatDate, findTier, APPLICATION_CLASSNAME } from "./helper.js";
-import { updateDisplay } from "./options.js";
+import { updateDisplay } from "../options.js";
 const history = document.getElementById("history");
 const mouseIcon = document.getElementById("mouse-icon");
 const selectBars = () => history.querySelectorAll(".bar");

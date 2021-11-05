@@ -1,4 +1,9 @@
-import { setStorage, findTier, buildSettings, getStorage } from './helper.js';
+import {
+  setStorage,
+  findTier,
+  buildSettings,
+  getStorage,
+} from "./utilities/helper.js";
 
 // Builds default settings on first load
 getStorage((options) => {

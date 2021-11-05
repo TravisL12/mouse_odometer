@@ -5,7 +5,7 @@
   "description": "Keep track of the distance your mouse has moved!",
   "homepage_url": "http://www.redundantrobot.com",
   "web_accessible_resources": [
-    "public/scripts/odometer.min.js",
+    "public/scripts/utilities/odometer.min.js",
     "public/scripts/application.js",
     "public/styles/odometer-theme-default.css",
     "public/styles/styles.css"
@@ -23,7 +23,10 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["public/scripts/odometer.min.js", "public/scripts/application.js"],
+      "js": [
+        "public/scripts/utilities/odometer.min.js",
+        "public/scripts/application.js"
+      ],
       "css": [
         "public/styles/odometer-theme-default.css",
         "public/styles/styles.css"

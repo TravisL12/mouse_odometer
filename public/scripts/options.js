@@ -3,8 +3,8 @@ import {
   getStorage,
   findTier,
   APPLICATION_CLASSNAME,
-} from "./helper.js";
-import { updateIcon, buildHistory } from "./historyGraph.js";
+} from "./utilities/helper.js";
+import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 
 // elements
 const showOdometerCheckbox = document.getElementById("show-odometer");
