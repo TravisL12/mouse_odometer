@@ -40,6 +40,7 @@
 
   class MouseOdometer {
     constructor() {
+      this.currentDistance = 0;
       this.lastMove = { x: 0, y: 0 };
       this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
       getStorage(this.buildOdometerWrapper.bind(this));
@@ -102,7 +103,7 @@
             this.currentDistance = 0;
           }
           const currentTier = response.currentTier;
-          this.odometerWrapper.classList.add(
+          this.odometerWrapper?.classList.add(
             `odomenter-text-color-${currentTier.background}`
           );
         })
