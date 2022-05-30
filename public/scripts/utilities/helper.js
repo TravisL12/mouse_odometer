@@ -13,6 +13,7 @@ const BLUE = "blue";
 const YELLOW = "yellow";
 const RED = "red";
 const TIER_INCREMENT = 10000;
+const MAX_DAY_HISTORY = 50;
 const tiers = {
   [WHITE]: {
     type: WHITE,
@@ -61,8 +62,8 @@ const DEFAULT_VALUES = {
 };
 
 // date is `YYYY-mm-dd` string, I miss you TS :'(
-const isDateInPast = (date) => {
-  const firstDate = new Date(date.split("-"));
+const isDateInPast = (dateStr) => {
+  const firstDate = new Date(dateStr.split("-"));
   const secondDate = new Date();
   return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
 };
@@ -87,8 +88,9 @@ export const buildSettings = (options) => {
   let currentDistance =
     options.currentDistance || DEFAULT_VALUES.currentDistance;
   let date = options.currentDate || DEFAULT_VALUES.currentDate;
-  let previousDistances =
-    options.previousDistances || DEFAULT_VALUES.previousDistances;
+  const previousDistances =
+    options.previousDistances.slice(`-${MAX_DAY_HISTORY}`) ||
+    DEFAULT_VALUES.previousDistances;
 
   const isNewDay = isDateInPast(date);
   if (isNewDay) {

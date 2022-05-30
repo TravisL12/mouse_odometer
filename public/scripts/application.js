@@ -136,7 +136,7 @@
       changes.showOdometer &&
       !changes.showOdometer.newValue
     ) {
-      mouse.odometerWrapper.remove();
+      mouse.odometerWrapper?.remove();
       delete mouse.odometer;
     }
   });
