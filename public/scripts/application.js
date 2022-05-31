@@ -25,8 +25,12 @@
   };
 
   // date is `YYYY-mm-dd` string, I miss you TS :'(
-  const isDateInPast = (date) => {
-    const firstDate = new Date(date.split("-"));
+  const isDateInPast = (dateStr) => {
+    if (!dateStr) {
+      return true;
+    }
+
+    const firstDate = new Date(dateStr.split("-"));
     const secondDate = new Date();
     return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
   };
@@ -99,6 +103,10 @@
     updateStorage() {
       chrome.runtime
         .sendMessage({ latestDistance: this.currentDistance }, (response) => {
+          if (!response) {
+            return;
+          }
+
           if (response?.isNewDay) {
             this.currentDistance = 0;
           }

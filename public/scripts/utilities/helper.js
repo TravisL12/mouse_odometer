@@ -55,7 +55,7 @@ export const formatDate = (date) => {
 };
 
 const DEFAULT_VALUES = {
-  showOdometer: false,
+  showOdometer: true,
   currentDistance: 0,
   currentDate: formatDate(new Date()),
   previousDistances: [],
@@ -63,6 +63,10 @@ const DEFAULT_VALUES = {
 
 // date is `YYYY-mm-dd` string, I miss you TS :'(
 const isDateInPast = (dateStr) => {
+  if (!dateStr) {
+    return true;
+  }
+
   const firstDate = new Date(dateStr.split("-"));
   const secondDate = new Date();
   return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
@@ -89,7 +93,7 @@ export const buildSettings = (options) => {
     options.currentDistance || DEFAULT_VALUES.currentDistance;
   let date = options.currentDate || DEFAULT_VALUES.currentDate;
   const previousDistances =
-    options.previousDistances.slice(`-${MAX_DAY_HISTORY}`) ||
+    options.previousDistances?.slice(`-${MAX_DAY_HISTORY}`) ||
     DEFAULT_VALUES.previousDistances;
 
   const isNewDay = isDateInPast(date);
