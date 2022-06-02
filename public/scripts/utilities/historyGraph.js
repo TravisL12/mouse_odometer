@@ -12,21 +12,6 @@ const BAR_WIDTH = 10;
 const BAR_HEIGHT = 50;
 const DAY_SLICE = Math.floor(CONTAINER_WIDTH / (BAR_WIDTH + 2));
 
-// SVG axes
-let axesPolyline = "";
-for (let i = 0; i < DAY_SLICE + 1; i++) {
-  axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
-}
-const axes = `
-    <polyline
-    marker-start="url(#dot)"
-    marker-mid="url(#dot)"
-    marker-end="url(#dot)"
-    stroke-width='1'
-    stroke=${black}
-    points="${axesPolyline}"></polyline>
-  `;
-
 const getPreviousDays = () => {
   const dates = [];
   for (let i = 1; i < DAY_SLICE; i++) {
@@ -59,6 +44,21 @@ export const buildHistory = (options) => {
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
   const todayXTranslate = prevDays.length * (BAR_WIDTH + 1);
+
+  // SVG axes
+  let axesPolyline = "";
+  for (let i = 0; i < DAY_SLICE + 1; i++) {
+    axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
+  }
+  const axes = `
+    <polyline
+    marker-start="url(#dot)"
+    marker-mid="url(#dot)"
+    marker-end="url(#dot)"
+    stroke-width='1'
+    stroke=${black}
+    points="${axesPolyline}"></polyline>
+  `;
 
   const plot = prevDays
     .reverse()

@@ -104,7 +104,9 @@ export const buildSettings = (options) => {
   }
 
   return {
-    showOdometer: options.showOdometer || DEFAULT_VALUES.showOdometer,
+    showOdometer: options.hasOwnProperty("showOdometer")
+      ? options.showOdometer
+      : DEFAULT_VALUES.showOdometer,
     currentDate: date,
     currentDistance,
     previousDistances,
