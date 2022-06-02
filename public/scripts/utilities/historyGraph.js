@@ -26,10 +26,20 @@ export const updateIcon = (path) => {
   mouseIcon.src = path;
 };
 
-const setBackgroundColor = (currentTier) => {
-  odometerContainer.classList = APPLICATION_CLASSNAME;
-  odometerContainer.classList.add(`background-${currentTier.background}`);
-};
+// SVG axes
+let axesPolyline = ``;
+for (let i = 0; i < DAY_SLICE + 1; i++) {
+  axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
+}
+const axes = `
+    <polyline
+    marker-start="url(#dot)"
+    marker-mid="url(#dot)"
+    marker-end="url(#dot)"
+    stroke-width='1'
+    stroke=${black}
+    points="${axesPolyline}"></polyline>
+  `;
 
 export const buildHistory = (options) => {
   const { previousDistances: historyData, currentDistance } = options;
@@ -44,21 +54,6 @@ export const buildHistory = (options) => {
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
   const todayXTranslate = prevDays.length * (BAR_WIDTH + 1);
-
-  // SVG axes
-  let axesPolyline = "";
-  for (let i = 0; i < DAY_SLICE + 1; i++) {
-    axesPolyline += ` ${i * (BAR_WIDTH + 1)},${BAR_HEIGHT}`;
-  }
-  const axes = `
-    <polyline
-    marker-start="url(#dot)"
-    marker-mid="url(#dot)"
-    marker-end="url(#dot)"
-    stroke-width='1'
-    stroke=${black}
-    points="${axesPolyline}"></polyline>
-  `;
 
   const plot = prevDays
     .reverse()
@@ -126,7 +121,6 @@ export const buildHistory = (options) => {
       barEl.classList.add("selected");
       const { distance, date } = event.target.dataset;
       const currentTier = findTier(distance);
-      setBackgroundColor(currentTier);
       updateIcon(currentTier.path);
       updateDisplay({ distance, date });
     });
@@ -141,7 +135,6 @@ history.addEventListener("click", (event) => {
     todayBar.classList.add("selected");
     const { distance, date } = todayBar.querySelector("rect").dataset;
     const currentTier = findTier(distance);
-    setBackgroundColor(currentTier);
     updateIcon(currentTier.path);
     updateDisplay({ distance, date });
   }

@@ -8,8 +8,6 @@
   --red-bar: #e20606;
   --yellow-bar: #fdff6a;
   --today-bar: #26ffe2;
-  --gradient-color-one: #9bb7ff;
-  --gradient-color-three: #e4fff0;
   --transparent-black: rgba(0, 0, 0, 0.5);
   --transparent-light-black: rgba(0, 0, 0, 0.05);
 }
@@ -25,6 +23,11 @@
   opacity: 0.8;
   font-size: 18px;
   line-height: 18px;
+  transition: 0.25s linear opacity;
+}
+
+.mouse-odometer-distance:hover {
+  opacity: 0;
 }
 
 .odomenter-text-color-1 {
@@ -52,43 +55,6 @@
   gap: 10px;
   padding: 10px;
   min-width: 300px;
-}
-
-.background-1 {
-  background: linear-gradient(
-    336deg,
-    var(--transparent-light-black) 0%,
-    var(--gradient-color-three) 100%
-  );
-}
-
-.background-2 {
-  background: linear-gradient(
-    336deg,
-    var(--lightgreen) 0%,
-    var(--gradient-color-three) 100%
-  );
-}
-.background-3 {
-  background: linear-gradient(
-    336deg,
-    var(--blue) 0%,
-    var(--gradient-color-three) 100%
-  );
-}
-.background-4 {
-  background: linear-gradient(
-    336deg,
-    var(--red) 0%,
-    var(--gradient-color-three) 100%
-  );
-}
-.background-5 {
-  background: linear-gradient(
-    336deg,
-    var(--red-bar) 0%,
-    var(--gradient-color-three) 100%
-  );
 }
 
 .mouse-odometer-options-container ul,
