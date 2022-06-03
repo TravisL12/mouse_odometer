@@ -52,11 +52,12 @@
 
     // Builds odometer element
     buildOdometerWrapper(options) {
+      this.currentDistance =
+        options.currentDistance || this.currentDistance || 0;
+
       if (options.showOdometer) {
         this.odometerWrapper = document.createElement("div");
         this.odometerWrapper.classList = "mouse-odometer-distance";
-        this.currentDistance =
-          options.currentDistance || this.currentDistance || 0;
         const odomTarget = document.createElement("div");
         this.odometerWrapper.appendChild(odomTarget);
         document.body.appendChild(this.odometerWrapper);
@@ -67,8 +68,9 @@
           theme: "default",
           duration: 1000,
         });
-        this.syncDistance();
       }
+
+      this.syncDistance();
     }
 
     // Calculate distance moved
