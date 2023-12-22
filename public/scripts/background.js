@@ -20,7 +20,7 @@ chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
         : settings.currentDistance;
     const currentTier = findTier(newDistance);
     const iconPath = currentTier.path;
-    chrome.browserAction.setIcon({ path: iconPath });
+    chrome.action.setIcon({ path: { 128: iconPath } });
     setStorage({ ...settings, currentDistance: newDistance });
     sendResponse({ ...settings, currentTier });
   });
