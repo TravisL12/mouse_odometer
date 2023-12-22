@@ -4,6 +4,7 @@ import {
   findTier,
   APPLICATION_CLASSNAME,
   getFormattedDate,
+  formatDate,
 } from "./utilities/helper.js";
 import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 
@@ -47,9 +48,15 @@ const pixelConversion = [
 ];
 
 const findMaxDistance = (previousDistances) => {
-  return previousDistances?.reduce((max, day) => {
-    return !max || day.distance > max.distance ? day : max;
-  });
+  if (!previousDistances || previousDistances.length === 0) {
+    return undefined;
+  }
+  return previousDistances.reduce(
+    (max, day) => {
+      return !max || day.distance > max.distance ? day : max;
+    },
+    { date: formatDate(new Date()), distance: 0 }
+  );
 };
 
 const findAvgDistance = (previousDistances) => {
