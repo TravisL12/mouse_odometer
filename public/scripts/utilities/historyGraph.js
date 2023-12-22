@@ -122,7 +122,7 @@ export const buildHistory = (options) => {
       const { distance, date } = event.target.dataset;
       const currentTier = findTier(distance);
       updateIcon(currentTier.path);
-      updateDisplay({ distance, date });
+      updateDisplay({ options, date });
     });
   });
 };
@@ -136,6 +136,6 @@ history.addEventListener("click", (event) => {
     const { distance, date } = todayBar.querySelector("rect").dataset;
     const currentTier = findTier(distance);
     updateIcon(currentTier.path);
-    updateDisplay({ distance, date });
+    updateDisplay({ options: { currentDistance: distance }, date: "today" });
   }
 });

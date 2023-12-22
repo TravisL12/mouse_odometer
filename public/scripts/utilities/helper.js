@@ -117,3 +117,11 @@ export const buildSettings = (options) => {
     isNewDay,
   };
 };
+
+export const getFormattedDate = (date) => {
+  return new Date(date).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
+};
