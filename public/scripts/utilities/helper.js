@@ -5,6 +5,7 @@ export const SETTING_VALUES = [
   "currentDate",
   "previousDistances",
   "conversionIndex",
+  "maxDistance",
 ];
 
 const WHITE = "white";
@@ -96,12 +97,20 @@ export const buildSettings = (options) => {
   let currentDistance =
     options.currentDistance || DEFAULT_VALUES.currentDistance;
   let date = options.currentDate || DEFAULT_VALUES.currentDate;
+  const defaultMaxDist = { date, distance: currentDistance };
+  let maxDistance = options.maxDistance || defaultMaxDist;
   const previousDistances =
     options.previousDistances?.slice(`-${MAX_DAY_HISTORY}`) ||
     DEFAULT_VALUES.previousDistances;
 
   const isNewDay = isDateInPast(date);
   if (isNewDay) {
+    if (
+      !options.maxDistance ||
+      currentDistance > options.maxDistance.distance
+    ) {
+      maxDistance = defaultMaxDist;
+    }
     previousDistances.push({ date, distance: options.currentDistance });
     date = formatDate(new Date());
     currentDistance = 0;
@@ -115,6 +124,7 @@ export const buildSettings = (options) => {
     currentDistance,
     previousDistances,
     isNewDay,
+    maxDistance,
   };
 };
 

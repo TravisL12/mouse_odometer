@@ -67,16 +67,20 @@ const findAvgDistance = (previousDistances) => {
 };
 
 export const updateDisplay = ({ options, date }) => {
-  const { currentDistance, previousDistances } = options;
+  const { currentDistance, previousDistances, maxDistance } = options;
 
-  odometer.update(Math.round(currentDistance || 0));
+  const distance =
+    date === "today"
+      ? currentDistance
+      : previousDistances.find((d) => d.date === date).distance;
   selectedDate.textContent =
     date === "today" ? "Today" : getFormattedDate(date);
 
-  const maxDay = findMaxDistance(previousDistances);
-  if (maxDay) {
-    maxOdometer.update(Math.round(maxDay.distance || 0));
-    maxDate.textContent = getFormattedDate(maxDay.date);
+  odometer.update(Math.round(distance || 0));
+
+  if (maxDistance) {
+    maxOdometer.update(Math.round(maxDistance.distance || 0));
+    maxDate.textContent = getFormattedDate(maxDistance.date);
   }
 
   const avgDay = findAvgDistance(previousDistances);
