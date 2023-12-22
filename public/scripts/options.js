@@ -11,6 +11,7 @@ import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 const showOdometerCheckbox = document.getElementById("show-odometer");
 const selectedDate = document.getElementById("selected-date");
 const maxDate = document.getElementById("max-date");
+// const avgDate = document.getElementById("avg-date");
 const totalDistance = document.getElementById("total-distance");
 const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 const versionElement = document.getElementById("version");
@@ -30,6 +31,7 @@ const createOdometer = (selector) => {
 
 const odometer = createOdometer("odometer");
 const maxOdometer = createOdometer("max-odometer");
+const avgOdometer = createOdometer("avg-odometer");
 
 // https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
 const PIXEL_MILES = 6082560.7663069;
@@ -50,6 +52,13 @@ const findMaxDistance = (previousDistances) => {
   });
 };
 
+const findAvgDistance = (previousDistances) => {
+  const sum = previousDistances?.reduce((sum, day) => {
+    return sum + day.distance;
+  }, 0);
+  return sum / previousDistances.length;
+};
+
 export const updateDisplay = ({ options, date }) => {
   const { currentDistance, previousDistances } = options;
 
@@ -61,6 +70,11 @@ export const updateDisplay = ({ options, date }) => {
   if (maxDay) {
     maxOdometer.update(Math.round(maxDay.distance || 0));
     maxDate.textContent = getFormattedDate(maxDay.date);
+  }
+
+  const avgDay = findAvgDistance(previousDistances);
+  if (avgDay) {
+    avgOdometer.update(Math.round(avgDay || 0));
   }
 };
 

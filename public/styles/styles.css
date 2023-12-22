@@ -74,6 +74,17 @@
   align-items: center;
 }
 
+.mouse-odometer-options-container .max {
+  background: var(--transparent-light-black);
+  padding: 3px 5px;
+  color: var(--red-bar);
+  border-radius: 4px;
+}
+
+.mouse-odometer-options-container .avg {
+  color: var(--blue);
+}
+
 .mouse-odometer-options-container .box.no-gap {
   gap: 0;
 }
