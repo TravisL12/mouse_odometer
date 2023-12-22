@@ -12,7 +12,7 @@ import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 const showOdometerCheckbox = document.getElementById("show-odometer");
 const selectedDate = document.getElementById("selected-date");
 const maxDate = document.getElementById("max-date");
-// const avgDate = document.getElementById("avg-date");
+const avgCount = document.getElementById("avg-count");
 const totalDistance = document.getElementById("total-distance");
 const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 const versionElement = document.getElementById("version");
@@ -82,6 +82,7 @@ export const updateDisplay = ({ options, date }) => {
   const avgDay = findAvgDistance(previousDistances);
   if (avgDay) {
     avgOdometer.update(Math.round(avgDay || 0));
+    avgCount.textContent = `Over ${previousDistances.length} days`;
   }
 };
 
