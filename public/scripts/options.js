@@ -3,12 +3,16 @@ import {
   getStorage,
   findTier,
   APPLICATION_CLASSNAME,
+  getFormattedDate,
+  formatDate,
 } from "./utilities/helper.js";
 import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 
 // elements
 const showOdometerCheckbox = document.getElementById("show-odometer");
 const selectedDate = document.getElementById("selected-date");
+const maxDate = document.getElementById("max-date");
+// const avgDate = document.getElementById("avg-date");
 const totalDistance = document.getElementById("total-distance");
 const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 const versionElement = document.getElementById("version");
@@ -16,13 +20,19 @@ const versionElement = document.getElementById("version");
 const manifestData = chrome.runtime.getManifest();
 versionElement.textContent = `v${manifestData.version}`;
 
-const odometer = new Odometer({
-  el: document.getElementById("odometer"),
-  value: 0,
-  format: ",ddd",
-  theme: "default",
-  duration: 100,
-});
+const createOdometer = (selector) => {
+  return new Odometer({
+    el: document.getElementById(selector),
+    value: 0,
+    format: ",ddd",
+    theme: "default",
+    duration: 100,
+  });
+};
+
+const odometer = createOdometer("odometer");
+const maxOdometer = createOdometer("max-odometer");
+const avgOdometer = createOdometer("avg-odometer");
 
 // https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
 const PIXEL_MILES = 6082560.7663069;
@@ -37,17 +47,42 @@ const pixelConversion = [
   },
 ];
 
-export const updateDisplay = (values) => {
-  const { distance, date } = values;
-  odometer.update(Math.round(distance || 0));
+const findMaxDistance = (previousDistances) => {
+  if (!previousDistances || previousDistances.length === 0) {
+    return undefined;
+  }
+  return previousDistances.reduce(
+    (max, day) => {
+      return !max || day.distance > max.distance ? day : max;
+    },
+    { date: formatDate(new Date()), distance: 0 }
+  );
+};
+
+const findAvgDistance = (previousDistances) => {
+  const sum = previousDistances?.reduce((sum, day) => {
+    return sum + day.distance;
+  }, 0);
+  return sum / previousDistances.length;
+};
+
+export const updateDisplay = ({ options, date }) => {
+  const { currentDistance, previousDistances } = options;
+
+  odometer.update(Math.round(currentDistance || 0));
   selectedDate.textContent =
-    date === "today"
-      ? "Today"
-      : new Date(date).toLocaleDateString(undefined, {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        });
+    date === "today" ? "Today" : getFormattedDate(date);
+
+  const maxDay = findMaxDistance(previousDistances);
+  if (maxDay) {
+    maxOdometer.update(Math.round(maxDay.distance || 0));
+    maxDate.textContent = getFormattedDate(maxDay.date);
+  }
+
+  const avgDay = findAvgDistance(previousDistances);
+  if (avgDay) {
+    avgOdometer.update(Math.round(avgDay || 0));
+  }
 };
 
 let totalDistanceCalculated = 0;
@@ -82,7 +117,7 @@ getStorage((options) => {
   updateIcon(currentTier.path);
   odometerContainer.classList.add(`background-${currentTier.background}`);
   updateDisplay({
-    distance: options.currentDistance,
+    options,
     date: "today",
   });
   showOdometerCheckbox.checked = options.showOdometer || false;

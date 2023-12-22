@@ -1,24 +1,22 @@
 {
   "name": "Mouse Odometer",
-  "version": "0.8.0",
-  "manifest_version": 2,
+  "version": "0.9.1",
+  "manifest_version": 3,
   "description": "Keep track of the distance your mouse has moved!",
-  "homepage_url": "http://www.redundantrobot.com",
   "web_accessible_resources": [
-    "public/scripts/utilities/odometer.min.js",
-    "public/scripts/application.js",
-    "public/styles/odometer-theme-default.css",
-    "public/styles/styles.css"
-  ],
-  "applications": {
-    "gecko": {
-      "id": "travis.lawrence12-mouseodometer@gmail.com",
-      "strict_min_version": "54.0"
+    {
+      "resources": [
+        "public/scripts/utilities/odometer.min.js",
+        "public/scripts/application.js",
+        "public/styles/odometer-theme-default.css",
+        "public/styles/styles.css"
+      ],
+      "matches": []
     }
-  },
+  ],
   "background": {
-    "page": "background.html",
-    "persistent": false
+    "service_worker": "public/scripts/background.js",
+    "type": "module"
   },
   "content_scripts": [
     {
@@ -33,7 +31,7 @@
       ]
     }
   ],
-  "browser_action": {
+  "action": {
     "default_title": "Mouse Odometer!",
     "default_popup": "options.html",
     "default_icon": "public/images/mouse_icon_white.png"
@@ -42,10 +40,6 @@
     "16": "public/images/mouse_icon_white.png",
     "128": "public/images/mouse_icon_white.png"
   },
-  "options_ui": {
-    "page": "options.html",
-    "open_in_tab": false
-  },
-
+  "options_page": "options.html",
   "permissions": ["activeTab", "storage"]
 }

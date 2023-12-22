@@ -18,24 +18,28 @@ const tiers = {
   [WHITE]: {
     type: WHITE,
     background: 1,
-    path: "public/images/mouse_icon_white.png",
+    path: "/public/images/mouse_icon_white.png",
   },
   [GREEN]: {
     type: GREEN,
     background: 2,
-    path: "public/images/mouse_icon_green.png",
+    path: "/public/images/mouse_icon_green.png",
   },
   [BLUE]: {
     type: BLUE,
     background: 3,
-    path: "public/images/mouse_icon_blue.png",
+    path: "/public/images/mouse_icon_blue.png",
   },
   [YELLOW]: {
     type: YELLOW,
     background: 4,
-    path: "public/images/mouse_icon_yellow.png",
+    path: "/public/images/mouse_icon_yellow.png",
   },
-  [RED]: { type: RED, background: 5, path: "public/images/mouse_icon_red.png" },
+  [RED]: {
+    type: RED,
+    background: 5,
+    path: "/public/images/mouse_icon_red.png",
+  },
 };
 
 export const setStorage = (options) => {
@@ -112,4 +116,12 @@ export const buildSettings = (options) => {
     previousDistances,
     isNewDay,
   };
+};
+
+export const getFormattedDate = (date) => {
+  return new Date(date).toLocaleDateString(undefined, {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  });
 };
