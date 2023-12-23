@@ -4,7 +4,8 @@ import {
   findTier,
   APPLICATION_CLASSNAME,
   getFormattedDate,
-  formatDate,
+  findAvgDistance,
+  sumDistances,
 } from "./utilities/helper.js";
 import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 
@@ -47,25 +48,6 @@ const pixelConversion = [
   },
 ];
 
-const findMaxDistance = (previousDistances) => {
-  if (!previousDistances || previousDistances.length === 0) {
-    return undefined;
-  }
-  return previousDistances.reduce(
-    (max, day) => {
-      return !max || day.distance > max.distance ? day : max;
-    },
-    { date: formatDate(new Date()), distance: 0 }
-  );
-};
-
-const findAvgDistance = (previousDistances) => {
-  const sum = previousDistances?.reduce((sum, day) => {
-    return sum + day.distance;
-  }, 0);
-  return sum / previousDistances.length;
-};
-
 export const updateDisplay = ({ options, date }) => {
   const { currentDistance, previousDistances, maxDistance } = options;
 
@@ -106,8 +88,8 @@ showOdometerCheckbox.addEventListener("change", (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
 
-const calcTotalDistance = (distances, currentDistance) => {
-  const total = distances.reduce((acc, { distance }) => acc + distance, 0);
+const calcTotalDistance = (prevDistances, currentDistance) => {
+  const total = sumDistances(prevDistances);
   totalDistanceCalculated = Math.round(total + currentDistance);
   toggleTotalDistanceConversions();
 };
