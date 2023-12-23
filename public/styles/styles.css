@@ -30,19 +30,19 @@
   opacity: 0;
 }
 
-.odomenter-text-color-1 {
+.odometer-text-color-1 {
   color: var(--transparent-black);
 }
-.odomenter-text-color-2 {
+.odometer-text-color-2 {
   color: var(--green);
 }
-.odomenter-text-color-3 {
+.odometer-text-color-3 {
   color: var(--blue);
 }
-.odomenter-text-color-4 {
+.odometer-text-color-4 {
   color: var(--red);
 }
-.odomenter-text-color-5 {
+.odometer-text-color-5 {
   color: var(--red-bar);
 }
 
