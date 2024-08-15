@@ -72,13 +72,14 @@ export const updateDisplay = ({ options, date }) => {
   }
 };
 
+let totalDistanceCalculated = 0;
 let conversionIndex = 0;
-const toggleTotalDistanceConversions = (totalDistanceValue) => {
+const toggleTotalDistanceConversions = () => {
   const conversion = pixelConversion[conversionIndex % pixelConversion.length];
   setStorage({ conversionIndex });
   conversionIndex++;
   totalDistance.textContent = `${(
-    totalDistanceValue / conversion.pixels
+    totalDistanceCalculated / conversion.pixels
   ).toLocaleString()}${conversion.label}!`;
 };
 
@@ -92,7 +93,8 @@ getStorage((options) => {
     buildHistory(options);
   }
   conversionIndex = options.conversionIndex || 0;
-  toggleTotalDistanceConversions(options.totalDistance);
+  totalDistanceCalculated = options.totalDistance;
+  toggleTotalDistanceConversions();
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
   odometerContainer.classList.add(`background-${currentTier.background}`);
