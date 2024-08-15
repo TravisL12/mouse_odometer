@@ -49,7 +49,8 @@ const pixelConversion = [
 ];
 
 export const updateDisplay = ({ options, date }) => {
-  const { currentDistance, previousDistances, maxDistance } = options;
+  const { currentDistance, previousDistances, maxDistance, totalDistance } =
+    options;
 
   const distance =
     date === "today"
@@ -88,9 +89,8 @@ showOdometerCheckbox.addEventListener("change", (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
 
-const calcTotalDistance = (prevDistances, currentDistance) => {
-  const total = sumDistances(prevDistances);
-  totalDistanceCalculated = Math.round(total + currentDistance);
+const calcTotalDistance = (totalDistance) => {
+  totalDistanceCalculated = totalDistance;
   toggleTotalDistanceConversions();
 };
 
@@ -99,7 +99,7 @@ getStorage((options) => {
     buildHistory(options);
   }
   conversionIndex = options.conversionIndex || 0;
-  calcTotalDistance(options.previousDistances, options.currentDistance);
+  calcTotalDistance(options.totalDistance);
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
   odometerContainer.classList.add(`background-${currentTier.background}`);

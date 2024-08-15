@@ -37,7 +37,7 @@
 
   const getStorage = (cb) => {
     chrome.storage.sync.get(
-      ["currentDistance", "showOdometer", "currentDate"],
+      ["currentDistance", "showOdometer", "currentDate", "totalDistance"],
       cb
     );
   };
@@ -45,6 +45,7 @@
   class MouseOdometer {
     constructor() {
       this.currentDistance = 0;
+      this.totalDistance = 0;
       this.lastMove = { x: 0, y: 0 };
       this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
       getStorage(this.buildOdometerWrapper.bind(this));
@@ -54,6 +55,7 @@
     buildOdometerWrapper(options) {
       this.currentDistance =
         options.currentDistance || this.currentDistance || 0;
+      this.totalDistance = options.totalDistance || this.totalDistance || 0;
 
       if (options.showOdometer) {
         this.odometerWrapper = document.createElement("div");
@@ -81,6 +83,7 @@
       const dy = Math.abs(oldY - newY);
       const move = Math.sqrt(dx ** 2 + dy ** 2);
       this.currentDistance += move;
+      this.totalDistance += move;
       this.throttledUpdate();
       this.renderDistance();
       this.lastMove = { x: newX, y: newY };
@@ -104,19 +107,25 @@
     // Sends distance to chrome.storage
     updateStorage() {
       chrome.runtime
-        .sendMessage({ latestDistance: this.currentDistance }, (response) => {
-          if (!response) {
-            return;
-          }
+        .sendMessage(
+          {
+            latestDistance: this.currentDistance,
+            totalDistance: this.totalDistance,
+          },
+          (response) => {
+            if (!response) {
+              return;
+            }
 
-          if (response?.isNewDay) {
-            this.currentDistance = 0;
+            if (response?.isNewDay) {
+              this.currentDistance = 0;
+            }
+            const currentTier = response.currentTier;
+            this.odometerWrapper?.classList.add(
+              `odometer-text-color-${currentTier.background}`
+            );
           }
-          const currentTier = response.currentTier;
-          this.odometerWrapper?.classList.add(
-            `odometer-text-color-${currentTier.background}`
-          );
-        })
+        )
         ?.bind(this);
     }
   }
