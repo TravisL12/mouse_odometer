@@ -6,6 +6,7 @@ export const SETTING_VALUES = [
   "previousDistances",
   "conversionIndex",
   "maxDistance",
+  "totalDistance",
 ];
 
 const WHITE = "white";
@@ -60,6 +61,7 @@ export const formatDate = (date) => {
 };
 
 const DEFAULT_VALUES = {
+  totalDistance: 0,
   showOdometer: true,
   currentDistance: 0,
   currentDate: formatDate(new Date()),
@@ -101,6 +103,11 @@ export const buildSettings = (options) => {
     options.previousDistances?.slice(`-${MAX_DAY_HISTORY}`) ||
     DEFAULT_VALUES.previousDistances;
 
+  const totalDistance =
+    options.totalDistance > 0
+      ? options.totalDistance
+      : sumDistances(previousDistances) + currentDistance ||
+        DEFAULT_VALUES.totalDistance;
   const defaultMaxDist = { date, distance: currentDistance };
   const previousMaxDist = findMaxDistance(previousDistances);
 
@@ -135,6 +142,7 @@ export const buildSettings = (options) => {
     previousDistances,
     isNewDay,
     maxDistance,
+    totalDistance,
   };
 };
 

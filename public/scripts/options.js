@@ -5,7 +5,6 @@ import {
   APPLICATION_CLASSNAME,
   getFormattedDate,
   findAvgDistance,
-  sumDistances,
 } from "./utilities/helper.js";
 import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 
@@ -49,7 +48,8 @@ const pixelConversion = [
 ];
 
 export const updateDisplay = ({ options, date }) => {
-  const { currentDistance, previousDistances, maxDistance } = options;
+  const { currentDistance, previousDistances, maxDistance, totalDistance } =
+    options;
 
   const distance =
     date === "today"
@@ -88,18 +88,15 @@ showOdometerCheckbox.addEventListener("change", (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
 
-const calcTotalDistance = (prevDistances, currentDistance) => {
-  const total = sumDistances(prevDistances);
-  totalDistanceCalculated = Math.round(total + currentDistance);
-  toggleTotalDistanceConversions();
-};
-
 getStorage((options) => {
   if (options.previousDistances) {
     buildHistory(options);
   }
   conversionIndex = options.conversionIndex || 0;
-  calcTotalDistance(options.previousDistances, options.currentDistance);
+  totalDistanceCalculated = options.totalDistance
+    ? Math.round(options.totalDistance)
+    : 0;
+  toggleTotalDistanceConversions();
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
   odometerContainer.classList.add(`background-${currentTier.background}`);
