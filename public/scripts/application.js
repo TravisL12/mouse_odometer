@@ -114,7 +114,7 @@
           }
           const currentTier = response.currentTier;
           this.odometerWrapper?.classList.add(
-            `odomenter-text-color-${currentTier.background}`
+            `odometer-text-color-${currentTier.background}`
           );
         })
         ?.bind(this);

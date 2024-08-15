@@ -5,6 +5,7 @@ export const SETTING_VALUES = [
   "currentDate",
   "previousDistances",
   "conversionIndex",
+  "maxDistance",
 ];
 
 const WHITE = "white";
@@ -100,6 +101,24 @@ export const buildSettings = (options) => {
     options.previousDistances?.slice(`-${MAX_DAY_HISTORY}`) ||
     DEFAULT_VALUES.previousDistances;
 
+  const defaultMaxDist = { date, distance: currentDistance };
+  const previousMaxDist = findMaxDistance(previousDistances);
+
+  // check current, history dates, or existing max to see what's the current highest
+  const maxDistance = [
+    previousMaxDist,
+    defaultMaxDist,
+    options.maxDistance,
+  ].reduce(
+    (acc, dist) => {
+      if (!acc?.date || dist?.distance > acc?.distance) {
+        acc = dist;
+      }
+      return acc;
+    },
+    { date: null, distance: 0 }
+  );
+
   const isNewDay = isDateInPast(date);
   if (isNewDay) {
     previousDistances.push({ date, distance: options.currentDistance });
@@ -115,6 +134,7 @@ export const buildSettings = (options) => {
     currentDistance,
     previousDistances,
     isNewDay,
+    maxDistance,
   };
 };
 
@@ -124,4 +144,32 @@ export const getFormattedDate = (date) => {
     month: "long",
     day: "numeric",
   });
+};
+
+export const findMaxDistance = (previousDistances) => {
+  if (!previousDistances || previousDistances.length === 0) {
+    return undefined;
+  }
+  return previousDistances.reduce(
+    (max, day) => {
+      return !max || day.distance > max.distance ? day : max;
+    },
+    { date: formatDate(new Date()), distance: 0 }
+  );
+};
+
+export const sumDistances = (distances) => {
+  return (
+    distances?.reduce((sum, day) => {
+      return sum + day.distance;
+    }, 0) || 0
+  );
+};
+
+export const findAvgDistance = (previousDistances) => {
+  if (!previousDistances) {
+    return 0;
+  }
+  const sum = sumDistances(previousDistances);
+  return sum / previousDistances.length;
 };
