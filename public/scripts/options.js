@@ -93,7 +93,9 @@ getStorage((options) => {
     buildHistory(options);
   }
   conversionIndex = options.conversionIndex || 0;
-  totalDistanceCalculated = Math.round(options.totalDistance);
+  totalDistanceCalculated = options.totalDistance
+    ? Math.round(options.totalDistance)
+    : 0;
   toggleTotalDistanceConversions();
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
