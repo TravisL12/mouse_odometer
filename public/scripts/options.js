@@ -5,7 +5,6 @@ import {
   APPLICATION_CLASSNAME,
   getFormattedDate,
   findAvgDistance,
-  sumDistances,
 } from "./utilities/helper.js";
 import { updateIcon, buildHistory } from "./utilities/historyGraph.js";
 
@@ -73,14 +72,13 @@ export const updateDisplay = ({ options, date }) => {
   }
 };
 
-let totalDistanceCalculated = 0;
 let conversionIndex = 0;
-const toggleTotalDistanceConversions = () => {
+const toggleTotalDistanceConversions = (totalDistanceValue) => {
   const conversion = pixelConversion[conversionIndex % pixelConversion.length];
   setStorage({ conversionIndex });
   conversionIndex++;
   totalDistance.textContent = `${(
-    totalDistanceCalculated / conversion.pixels
+    totalDistanceValue / conversion.pixels
   ).toLocaleString()}${conversion.label}!`;
 };
 
@@ -89,17 +87,12 @@ showOdometerCheckbox.addEventListener("change", (event) => {
   setStorage({ showOdometer: event.target.checked });
 });
 
-const calcTotalDistance = (totalDistance) => {
-  totalDistanceCalculated = totalDistance;
-  toggleTotalDistanceConversions();
-};
-
 getStorage((options) => {
   if (options.previousDistances) {
     buildHistory(options);
   }
   conversionIndex = options.conversionIndex || 0;
-  calcTotalDistance(options.totalDistance);
+  toggleTotalDistanceConversions(options.totalDistance);
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
   odometerContainer.classList.add(`background-${currentTier.background}`);
