@@ -104,7 +104,7 @@
       });
     }
 
-    // Sends distance to chrome.storage
+    // Sends distance to chrome.storage in background.js
     updateStorage() {
       chrome.runtime
         .sendMessage(
@@ -120,10 +120,10 @@
             if (response?.isNewDay) {
               this.currentDistance = 0;
             }
-            const currentTier = response.currentTier;
             this.odometerWrapper?.classList.add(
-              `odometer-text-color-${currentTier.background}`
+              `odometer-text-color-${response.currentTier.background}`
             );
+            this.renderDistance();
           }
         )
         ?.bind(this);

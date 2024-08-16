@@ -1,13 +1,13 @@
 {
   "name": "Mouse Odometer",
-  "version": "0.9.5",
+  "version": "0.9.6",
   "manifest_version": 3,
   "description": "Keep track of the distance your mouse has moved!",
   "web_accessible_resources": [
     {
       "resources": [
         "public/scripts/utilities/odometer.min.js",
-        "public/scripts/application.js",
+        "public/scripts/contentScript.js",
         "public/styles/odometer-theme-default.css",
         "public/styles/styles.css"
       ],
@@ -23,7 +23,7 @@
       "matches": ["<all_urls>"],
       "js": [
         "public/scripts/utilities/odometer.min.js",
-        "public/scripts/application.js"
+        "public/scripts/contentScript.js"
       ],
       "css": [
         "public/styles/odometer-theme-default.css",

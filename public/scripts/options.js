@@ -37,7 +37,7 @@ const avgOdometer = createOdometer("avg-odometer");
 // https://www.justintools.com/unit-conversion/length.php?k1=miles&k2=pixels
 const PIXEL_MILES = 6082560.7663069;
 const PIXEL_KM = 3779528.0352161;
-const pixelConversion = [
+const PIXEL_CONVERSION = [
   { label: " total pixels", pixels: 1 },
   { label: " miles in pixels", pixels: PIXEL_MILES },
   { label: " kilometers in pixels", pixels: PIXEL_KM },
@@ -48,8 +48,7 @@ const pixelConversion = [
 ];
 
 export const updateDisplay = ({ options, date }) => {
-  const { currentDistance, previousDistances, maxDistance, totalDistance } =
-    options;
+  const { currentDistance, previousDistances, maxDistance } = options;
 
   const distance =
     date === "today"
@@ -72,31 +71,41 @@ export const updateDisplay = ({ options, date }) => {
   }
 };
 
-let totalDistanceCalculated = 0;
-let conversionIndex = 0;
-const toggleTotalDistanceConversions = () => {
-  const conversion = pixelConversion[conversionIndex % pixelConversion.length];
-  setStorage({ conversionIndex });
-  conversionIndex++;
-  totalDistance.textContent = `${(
-    totalDistanceCalculated / conversion.pixels
-  ).toLocaleString()}${conversion.label}!`;
-};
+class OdomOption {
+  constructor() {
+    this.totalDistanceCalculated = 0;
+    this.conversionIndex = 0;
 
-totalDistance.addEventListener("click", toggleTotalDistanceConversions);
-showOdometerCheckbox.addEventListener("change", (event) => {
-  setStorage({ showOdometer: event.target.checked });
-});
+    totalDistance.addEventListener(
+      "click",
+      this.toggleTotalDistanceConversions.bind(this)
+    );
+    showOdometerCheckbox.addEventListener("change", (event) => {
+      setStorage({ showOdometer: event.target.checked });
+    });
+  }
 
+  toggleTotalDistanceConversions() {
+    const conversion = PIXEL_CONVERSION[this.conversionIndex];
+    setStorage({ conversionIndex: this.conversionIndex });
+    this.conversionIndex = (this.conversionIndex + 1) % PIXEL_CONVERSION.length;
+    totalDistance.textContent = `${(
+      this.totalDistanceCalculated / conversion.pixels
+    ).toLocaleString()}${conversion.label}!`;
+  }
+}
+
+const odometerOptions = new OdomOption();
 getStorage((options) => {
   if (options.previousDistances) {
     buildHistory(options);
   }
-  conversionIndex = options.conversionIndex || 0;
-  totalDistanceCalculated = options.totalDistance
+  odometerOptions.conversionIndex =
+    options.conversionIndex % PIXEL_CONVERSION.length || 0;
+  odometerOptions.totalDistanceCalculated = options.totalDistance
     ? Math.round(options.totalDistance)
     : 0;
-  toggleTotalDistanceConversions();
+  odometerOptions.toggleTotalDistanceConversions();
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
   odometerContainer.classList.add(`background-${currentTier.background}`);
