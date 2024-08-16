@@ -103,11 +103,10 @@ export const buildSettings = (options) => {
     options.previousDistances?.slice(`-${MAX_DAY_HISTORY}`) ||
     DEFAULT_VALUES.previousDistances;
 
-  const totalDistance =
+  let totalDistance =
     options.totalDistance > 0
       ? options.totalDistance
-      : sumDistances(previousDistances) + currentDistance ||
-        DEFAULT_VALUES.totalDistance;
+      : sumDistances(previousDistances) || DEFAULT_VALUES.totalDistance;
   const defaultMaxDist = { date, distance: currentDistance };
   const previousMaxDist = findMaxDistance(previousDistances);
 
@@ -130,6 +129,7 @@ export const buildSettings = (options) => {
   if (isNewDay) {
     previousDistances.push({ date, distance: options.currentDistance });
     date = formatDate(new Date());
+    totalDistance = totalDistance + currentDistance;
     currentDistance = 0;
   }
 
