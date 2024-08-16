@@ -37,7 +37,7 @@
 
   const getStorage = (cb) => {
     chrome.storage.sync.get(
-      ["currentDistance", "showOdometer", "currentDate", "totalDistance"],
+      ["currentDistance", "showOdometer", "currentDate"],
       cb
     );
   };
@@ -45,7 +45,6 @@
   class MouseOdometer {
     constructor() {
       this.currentDistance = 0;
-      this.totalDistance = 0;
       this.lastMove = { x: 0, y: 0 };
       this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
       getStorage(this.buildOdometerWrapper.bind(this));
@@ -55,7 +54,6 @@
     buildOdometerWrapper(options) {
       this.currentDistance =
         options.currentDistance || this.currentDistance || 0;
-      this.totalDistance = options.totalDistance || this.totalDistance || 0;
 
       if (options.showOdometer) {
         this.odometerWrapper = document.createElement("div");
@@ -83,7 +81,6 @@
       const dy = Math.abs(oldY - newY);
       const move = Math.sqrt(dx ** 2 + dy ** 2);
       this.currentDistance += move;
-      this.totalDistance += move;
       this.throttledUpdate();
       this.renderDistance();
       this.lastMove = { x: newX, y: newY };
@@ -110,7 +107,6 @@
         .sendMessage(
           {
             latestDistance: this.currentDistance,
-            totalDistance: this.totalDistance,
           },
           (response) => {
             if (!response) {
