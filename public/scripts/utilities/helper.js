@@ -80,16 +80,16 @@ const isDateInPast = (dateStr) => {
 };
 
 export const findTier = (distance) => {
-  if (distance > TIER_INCREMENT * 100) {
+  if (distance > TIER_INCREMENT * 175) {
     return tiers[RED];
   }
-  if (distance > TIER_INCREMENT * 75) {
+  if (distance > TIER_INCREMENT * 100) {
     return tiers[YELLOW];
   }
-  if (distance > TIER_INCREMENT * 50) {
+  if (distance > TIER_INCREMENT * 75) {
     return tiers[BLUE];
   }
-  if (distance > TIER_INCREMENT * 25) {
+  if (distance > TIER_INCREMENT * 50) {
     return tiers[GREEN];
   }
   return tiers[WHITE]; // default
