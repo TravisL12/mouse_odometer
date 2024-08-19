@@ -113,9 +113,10 @@
               return;
             }
 
-            if (response?.isNewDay) {
-              this.currentDistance = 0;
-            }
+            this.currentDistance = response?.isNewDay
+              ? 0
+              : response.currentDistance;
+
             this.odometerWrapper?.classList.add(
               `odometer-text-color-${response.currentTier.background}`
             );
