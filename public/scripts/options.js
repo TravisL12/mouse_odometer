@@ -102,9 +102,10 @@ getStorage((options) => {
   }
   odometerOptions.conversionIndex =
     options.conversionIndex % PIXEL_CONVERSION.length || 0;
-  odometerOptions.totalDistanceCalculated = options.totalDistance
-    ? Math.round(options.totalDistance + options.currentDistance)
-    : 0;
+  odometerOptions.totalDistanceCalculated =
+    options.totalDistance !== undefined
+      ? Math.round(options.totalDistance + options.currentDistance)
+      : 0;
   odometerOptions.toggleTotalDistanceConversions();
   const currentTier = findTier(options.currentDistance);
   updateIcon(currentTier.path);
