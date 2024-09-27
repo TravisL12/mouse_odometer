@@ -47,9 +47,9 @@ export const buildHistory = (options) => {
   const maxValue =
     Math.max.apply(
       null,
-      [...historyData, { distance: currentDistance }].map(
-        ({ distance }) => distance
-      )
+      [...historyData, { distance: currentDistance }]
+        .slice(-DAY_SLICE)
+        .map(({ distance }) => distance)
     ) || 1;
   const todayHeight = (currentDistance / maxValue) * BAR_HEIGHT;
   const todayYDist = BAR_HEIGHT - todayHeight;
