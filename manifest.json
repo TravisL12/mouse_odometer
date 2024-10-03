@@ -1,6 +1,6 @@
 {
   "name": "Mouse Odometer",
-  "version": "0.9.8",
+  "version": "0.9.9",
   "manifest_version": 3,
   "description": "Keep track of the distance your mouse has moved!",
   "web_accessible_resources": [
