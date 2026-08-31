@@ -3,31 +3,22 @@
   "version": "0.9.9",
   "manifest_version": 3,
   "description": "Keep track of the distance your mouse has moved!",
-  "web_accessible_resources": [
-    {
-      "resources": [
-        "public/scripts/utilities/odometer.min.js",
-        "public/scripts/contentScript.js",
-        "public/styles/odometer-theme-default.css",
-        "public/styles/styles.css"
-      ],
-      "matches": []
-    }
-  ],
   "background": {
     "service_worker": "public/scripts/background.js",
     "type": "module"
   },
   "content_scripts": [
     {
-      "matches": ["<all_urls>"],
+      "matches": [
+        "<all_urls>"
+      ],
       "js": [
         "public/scripts/utilities/odometer.min.js",
         "public/scripts/contentScript.js"
       ],
       "css": [
         "public/styles/odometer-theme-default.css",
-        "public/styles/styles.css"
+        "public/styles/content.css"
       ]
     }
   ],
@@ -41,5 +32,7 @@
     "128": "public/images/mouse_icon_white.png"
   },
   "options_page": "options.html",
-  "permissions": ["activeTab", "storage"]
+  "permissions": [
+    "storage"
+  ]
 }

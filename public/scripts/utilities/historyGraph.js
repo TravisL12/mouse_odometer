@@ -1,10 +1,15 @@
 import { formatDate, findTier, APPLICATION_CLASSNAME } from "./helper.js";
-import { updateDisplay } from "../options.js";
 const history = document.getElementById("history");
 const mouseIcon = document.getElementById("mouse-icon");
 const selectBars = () => history.querySelectorAll(".bar");
 const odometerContainer = document.querySelector(`.${APPLICATION_CLASSNAME}`);
 const black = getComputedStyle(odometerContainer).getPropertyValue("--black");
+
+// The last options buildHistory() rendered and the caller's select handler, so
+// the background-click listener below can reach them. Taking the handler as an
+// argument keeps this module from importing back out of options.js.
+let currentOptions = null;
+let onSelect = () => {};
 
 // graph values
 const CONTAINER_WIDTH = 300;
@@ -41,7 +46,9 @@ const axes = `
     points="${axesPolyline}"></polyline>
   `;
 
-export const buildHistory = (options) => {
+export const buildHistory = (options, handleSelect) => {
+  currentOptions = options;
+  onSelect = handleSelect;
   const { previousDistances: historyData, currentDistance } = options;
   const prevDays = getPreviousDays();
   const maxValue =
@@ -122,7 +129,7 @@ export const buildHistory = (options) => {
       const { distance, date } = event.target.dataset;
       const currentTier = findTier(distance);
       updateIcon(currentTier.path);
-      updateDisplay({ options, date });
+      onSelect({ options, date });
     });
   });
 };
@@ -133,9 +140,8 @@ history.addEventListener("click", (event) => {
     selectBars().forEach((bar) => bar.classList.remove("selected"));
     const todayBar = document.querySelector(".bar.today");
     todayBar.classList.add("selected");
-    const { distance, date } = todayBar.querySelector("rect").dataset;
-    const currentTier = findTier(distance);
+    const currentTier = findTier(currentOptions?.currentDistance || 0);
     updateIcon(currentTier.path);
-    updateDisplay({ options: { currentDistance: distance }, date: "today" });
+    onSelect({ options: currentOptions, date: "today" });
   }
 });

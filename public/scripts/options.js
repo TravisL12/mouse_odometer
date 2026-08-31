@@ -47,13 +47,14 @@ const PIXEL_CONVERSION = [
   },
 ];
 
-export const updateDisplay = ({ options, date }) => {
+const updateDisplay = ({ options, date }) => {
   const { currentDistance, previousDistances, maxDistance } = options;
 
-  const distance =
-    date === "today"
-      ? currentDistance
-      : previousDistances.find((d) => d.date === date).distance;
+  // Bars are drawn for every one of the last ~28 days, but previousDistances
+  // only holds days that recorded movement -- so any gap (a weekend, a fresh
+  // install) has a bar whose date has no entry behind it.
+  const recorded = previousDistances?.find((d) => d.date === date);
+  const distance = date === "today" ? currentDistance : recorded?.distance || 0;
   selectedDate.textContent =
     date === "today" ? "Today" : getFormattedDate(date);
 
@@ -96,9 +97,9 @@ class OdomOption {
 }
 
 const odometerOptions = new OdomOption();
-getStorage((options) => {
+getStorage().then((options) => {
   if (options.previousDistances) {
-    buildHistory(options);
+    buildHistory(options, updateDisplay);
   }
   odometerOptions.conversionIndex =
     options.conversionIndex % PIXEL_CONVERSION.length || 0;

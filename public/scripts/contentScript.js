@@ -1,6 +1,7 @@
 (() => {
-  const THROTTLE_DELAY = 250;
+  const RENDER_DELAY = 250;
   const STORAGE_UPDATE_DELAY = 3000;
+  const HOT_VALUES = ["currentDistance", "currentDate"];
 
   // https://codeburst.io/throttling-and-debouncing-in-javascript-b01cad5c8edf
   const throttle = (func, limit) => {
@@ -35,19 +36,33 @@
     return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
   };
 
-  const getStorage = (cb) => {
-    chrome.storage.sync.get(
-      ["currentDistance", "showOdometer", "currentDate"],
-      cb
-    );
+  // Mirrors helper.js getStorage: the hot counter lives in `local`, the rest in
+  // `sync`. See LOCAL_VALUES there for why.
+  const getStorage = async () => {
+    const [synced, local] = await Promise.all([
+      chrome.storage.sync.get([
+        "currentDistance",
+        "showOdometer",
+        "currentDate",
+      ]),
+      chrome.storage.local.get(HOT_VALUES),
+    ]);
+
+    for (const key of HOT_VALUES) {
+      if (local[key] !== undefined) {
+        synced[key] = local[key];
+      }
+    }
+
+    return synced;
   };
 
   class MouseOdometer {
     constructor() {
       this.currentDistance = 0;
-      this.lastMove = { x: 0, y: 0 };
       this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
-      getStorage(this.buildOdometerWrapper.bind(this));
+      this.throttledRender = throttle(this.renderDistance, RENDER_DELAY);
+      getStorage().then(this.buildOdometerWrapper.bind(this));
     }
 
     // Builds odometer element
@@ -73,17 +88,22 @@
       this.syncDistance();
     }
 
-    // Calculate distance moved
+    // Calculate distance moved.
+    //
+    // movementX/Y are the deltas the browser already computed between the real
+    // consecutive positions, so accumulating them measures the actual path.
+    // Sampling clientX/Y on a throttled listener instead measured the straight
+    // line between samples -- circles registered as ~nothing -- and the first
+    // event on every page load counted the whole distance from the origin.
     updateMove(event) {
-      const { clientX: newX, clientY: newY } = event;
-      const { x: oldX, y: oldY } = this.lastMove;
-      const dx = Math.abs(oldX - newX);
-      const dy = Math.abs(oldY - newY);
-      const move = Math.sqrt(dx ** 2 + dy ** 2);
+      const move = Math.hypot(event.movementX || 0, event.movementY || 0);
+      if (!move) {
+        return;
+      }
+
       this.currentDistance += move;
       this.throttledUpdate();
-      this.renderDistance();
-      this.lastMove = { x: newX, y: newY };
+      this.throttledRender();
     }
 
     // Update on screen odometer
@@ -95,44 +115,42 @@
 
     // Gets distance from chrome.storage
     syncDistance() {
-      getStorage((options) => {
+      getStorage().then((options) => {
         const isNewDay = isDateInPast(options.currentDate);
         this.currentDistance = isNewDay ? 0 : options.currentDistance;
+        this.renderDistance();
       });
     }
 
     // Sends distance to chrome.storage in background.js
     updateStorage() {
       chrome.runtime
-        .sendMessage(
-          {
-            latestDistance: this.currentDistance,
-          },
-          (response) => {
-            if (!response) {
-              return;
-            }
-
-            this.currentDistance = response?.isNewDay
-              ? 0
-              : response.currentDistance;
-
-            this.odometerWrapper?.classList.add(
-              `odometer-text-color-${response.currentTier.background}`
-            );
-            this.renderDistance();
+        .sendMessage({ latestDistance: this.currentDistance })
+        .then((response) => {
+          if (!response) {
+            return;
           }
-        )
-        ?.bind(this);
+
+          this.currentDistance = response.isNewDay
+            ? 0
+            : response.currentDistance;
+
+          this.odometerWrapper?.classList.add(
+            `odometer-text-color-${response.currentTier.background}`
+          );
+          this.renderDistance();
+        })
+        .catch(() => {
+          // No receiver: the extension was reloaded or updated under us.
+        });
     }
   }
 
   const mouse = new MouseOdometer();
 
-  // Mouse movement listener
-  const throttled = throttle(mouse.updateMove, THROTTLE_DELAY).bind(mouse);
-  document.body.removeEventListener("mousemove", throttled);
-  document.body.addEventListener("mousemove", throttled);
+  // Mouse movement listener. Not throttled -- accumulating a delta is cheaper
+  // than the throttle's own bookkeeping, and dropping events loses distance.
+  document.body.addEventListener("mousemove", mouse.updateMove.bind(mouse));
 
   // When tab becomes active, sync distance
   document.addEventListener("visibilitychange", () => {

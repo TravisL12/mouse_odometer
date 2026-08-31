@@ -9,6 +9,14 @@ export const SETTING_VALUES = [
   "totalDistance",
 ];
 
+// `currentDistance`/`currentDate` are rewritten every few seconds by every open
+// tab, which blows past the chrome.storage.sync quota (120 writes/min, 1800/hr)
+// with only a handful of active tabs -- and over quota the writes fail silently.
+// So they are written to `local` on the hot path and only mirrored into `sync`
+// on a slow interval (and on day rollover) so a second device still picks them
+// up. Everything else is cold and goes straight to `sync`.
+export const LOCAL_VALUES = ["currentDistance", "currentDate"];
+
 const WHITE = "white";
 const GREEN = "green";
 const BLUE = "blue";
@@ -44,12 +52,50 @@ const tiers = {
   },
 };
 
-export const setStorage = (options) => {
-  chrome.storage.sync.set(options);
+// Reads both areas and lets the hot `local` copy win where it exists.
+export const getStorage = async () => {
+  const [synced, local] = await Promise.all([
+    chrome.storage.sync.get(SETTING_VALUES),
+    chrome.storage.local.get(LOCAL_VALUES),
+  ]);
+
+  for (const key of LOCAL_VALUES) {
+    if (local[key] !== undefined) {
+      synced[key] = local[key];
+    }
+  }
+
+  return synced;
 };
 
-export const getStorage = (cb) => {
-  chrome.storage.sync.get(SETTING_VALUES, cb);
+// Routes each key to its area. Pass `syncNow` to also mirror the hot keys into
+// `sync` -- callers on the hot path should leave it off. Keys outside
+// SETTING_VALUES (e.g. the derived `isNewDay`) are dropped rather than persisted.
+export const setStorage = async (options, { syncNow = false } = {}) => {
+  const local = {};
+  const synced = {};
+
+  for (const [key, value] of Object.entries(options)) {
+    if (!SETTING_VALUES.includes(key)) continue;
+    if (LOCAL_VALUES.includes(key)) {
+      local[key] = value;
+    } else {
+      synced[key] = value;
+    }
+  }
+
+  const mirrored = syncNow ? { ...synced, ...local } : synced;
+  const writes = [];
+  if (Object.keys(local).length) writes.push(chrome.storage.local.set(local));
+  if (Object.keys(mirrored).length)
+    writes.push(chrome.storage.sync.set(mirrored));
+
+  try {
+    await Promise.all(writes);
+  } catch (err) {
+    // Over quota, or the extension context went away mid-write.
+    console.warn("Mouse Odometer: storage write failed", err);
+  }
 };
 
 export const formatDate = (date) => {
@@ -127,9 +173,14 @@ export const buildSettings = (options) => {
 
   const isNewDay = isDateInPast(date);
   if (isNewDay) {
-    previousDistances.push({ date, distance: options.currentDistance });
+    // Guard against the same day being rolled over twice (two tabs racing, or
+    // the service worker dying mid-write) -- a duplicate entry would be
+    // double-counted by sumDistances() and totalDistance forever after.
+    if (!previousDistances.some((day) => day.date === date)) {
+      previousDistances.push({ date, distance: currentDistance });
+      totalDistance = totalDistance + currentDistance;
+    }
     date = formatDate(new Date());
-    totalDistance = totalDistance + currentDistance;
     currentDistance = 0;
   }
 
