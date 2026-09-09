@@ -1,0 +1,11 @@
+{
+  "name": "mouse-odometer",
+  "version": "1.0.1",
+  "description": "Keep track of the distance your mouse has moved!",
+  "private": true,
+  "license": "MIT",
+  "repository": "https://github.com/TravisL12/mouse_odometer",
+  "scripts": {
+    "package": "./scripts/build-release.sh"
+  }
+}

@@ -1,8 +1,8 @@
 {
   "name": "Mouse Odometer",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "manifest_version": 3,
-  "description": "Keep track of the distance your mouse has moved!",
+  "description": "Mouse tracker for your cursor: see how far it travels each day in pixels, miles, or trips to the moon. No data collected.",
   "background": {
     "service_worker": "public/scripts/background.js",
     "type": "module"
