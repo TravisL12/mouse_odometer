@@ -25,6 +25,12 @@
     };
   };
 
+  // Mirrors helper.js formatDate -- helper.js is a module and content scripts
+  // are not, so it cannot be imported here.
+  const formatDate = (date) => {
+    return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
+  };
+
   // date is `YYYY-mm-dd` string, I miss you TS :'(
   const isDateInPast = (dateStr) => {
     if (!dateStr) {
@@ -60,6 +66,9 @@
   class MouseOdometer {
     constructor() {
       this.currentDistance = 0;
+      // The day `currentDistance` was accumulated on. Sent with every update so
+      // background.js can drop a total that belongs to a day already banked.
+      this.distanceDate = null;
       this.throttledUpdate = throttle(this.updateStorage, STORAGE_UPDATE_DELAY);
       this.throttledRender = throttle(this.renderDistance, RENDER_DELAY);
       getStorage().then(this.buildOdometerWrapper.bind(this));
@@ -101,6 +110,13 @@
         return;
       }
 
+      // A tab left open across midnight would otherwise keep counting up from
+      // yesterday's total until its next round trip through the background.
+      if (isDateInPast(this.distanceDate)) {
+        this.currentDistance = 0;
+        this.distanceDate = formatDate(new Date());
+      }
+
       this.currentDistance += move;
       this.throttledUpdate();
       this.throttledRender();
@@ -118,6 +134,9 @@
       getStorage().then((options) => {
         const isNewDay = isDateInPast(options.currentDate);
         this.currentDistance = isNewDay ? 0 : options.currentDistance;
+        this.distanceDate = isNewDay
+          ? formatDate(new Date())
+          : options.currentDate;
         this.renderDistance();
       });
     }
@@ -125,15 +144,19 @@
     // Sends distance to chrome.storage in background.js
     updateStorage() {
       chrome.runtime
-        .sendMessage({ latestDistance: this.currentDistance })
+        .sendMessage({
+          latestDistance: this.currentDistance,
+          distanceDate: this.distanceDate,
+        })
         .then((response) => {
           if (!response) {
             return;
           }
 
-          this.currentDistance = response.isNewDay
-            ? 0
-            : response.currentDistance;
+          // The background is authoritative: on a rollover it returns 0, and a
+          // tab that reported a stale total gets today's real value back.
+          this.currentDistance = response.currentDistance;
+          this.distanceDate = response.currentDate;
 
           this.odometerWrapper?.classList.add(
             `odometer-text-color-${response.currentTier.background}`

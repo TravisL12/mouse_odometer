@@ -26,10 +26,23 @@ const serialize = (task) => {
   return run;
 };
 
-const applyUpdate = async (latestDistance) => {
+const applyUpdate = async ({ latestDistance, distanceDate }) => {
   const settings = buildSettings(await getStorage());
+
+  // A tab accumulates its running total in memory and only learns about a day
+  // rollover from the response to its own message. Whichever tab triggers the
+  // rollover is told about it, but every other open tab is still holding
+  // yesterday's total -- and by the time it reports in, `isNewDay` is already
+  // false, so the old number would be written back as today's. Tabs therefore
+  // stamp the day their total belongs to, and anything not stamped with the
+  // current day is dropped rather than counted. (`distanceDate` is undefined
+  // for a content script left over from a previous extension version.)
+  const isStale =
+    settings.isNewDay ||
+    (distanceDate !== undefined && distanceDate !== settings.currentDate);
+
   const newDistance =
-    latestDistance > settings.currentDistance && !settings.isNewDay
+    latestDistance > settings.currentDistance && !isStale
       ? latestDistance
       : settings.currentDistance;
 
@@ -62,7 +75,7 @@ serialize(async () => {
 
 // Return true makes async response, receives from contentScript.js > updateStorage()
 chrome.runtime.onMessage.addListener((request, _, sendResponse) => {
-  serialize(() => applyUpdate(request.latestDistance)).then(sendResponse, (err) => {
+  serialize(() => applyUpdate(request)).then(sendResponse, (err) => {
     console.warn("Mouse Odometer: update failed", err);
     sendResponse(null);
   });
