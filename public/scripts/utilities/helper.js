@@ -13,8 +13,8 @@ export const SETTING_VALUES = [
 // tab, which blows past the chrome.storage.sync quota (120 writes/min, 1800/hr)
 // with only a handful of active tabs -- and over quota the writes fail silently.
 // So they are written to `local` on the hot path and only mirrored into `sync`
-// on a slow interval (and on day rollover) so a second device still picks them
-// up. Everything else is cold and goes straight to `sync`.
+// on an interval (and on day rollover) so a second device still picks them up.
+// Everything else is cold and goes straight to `sync`.
 export const LOCAL_VALUES = ["currentDistance", "currentDate"];
 
 const WHITE = "white";
@@ -52,20 +52,46 @@ const tiers = {
   },
 };
 
-// Reads both areas and lets the hot `local` copy win where it exists.
+// `YYYY-m-d` with month/day unpadded, so string comparison is not an option
+// ("2026-9-12" sorts after "2026-10-1").
+const parseDate = (dateStr) => {
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day).setHours(0, 0, 0, 0);
+};
+
+// Neither copy of the hot counter is authoritative: this device's `local` may be
+// ahead, or another device may have mirrored a bigger number into `sync`. The
+// newer day always wins, so a rollover clears the counter everywhere instead of
+// an old total resurrecting itself; within the same day the larger distance wins.
+// A device can lose the movement since its last mirror, which is the accepted
+// trade for converging without per-device bookkeeping.
+const pickHot = (a, b) => {
+  const pick = ({ currentDate, currentDistance }) => ({
+    currentDate,
+    currentDistance: currentDistance || 0,
+  });
+
+  if (a.currentDate === undefined) return pick(b);
+  if (b.currentDate === undefined) return pick(a);
+  if (a.currentDate !== b.currentDate) {
+    return parseDate(b.currentDate) > parseDate(a.currentDate)
+      ? pick(b)
+      : pick(a);
+  }
+  return (b.currentDistance || 0) > (a.currentDistance || 0)
+    ? pick(b)
+    : pick(a);
+};
+
+// Reads both areas and merges the hot counter max-wins, so a distance another
+// device mirrored into `sync` is adopted here rather than shadowed by `local`.
 export const getStorage = async () => {
   const [synced, local] = await Promise.all([
     chrome.storage.sync.get(SETTING_VALUES),
     chrome.storage.local.get(LOCAL_VALUES),
   ]);
 
-  for (const key of LOCAL_VALUES) {
-    if (local[key] !== undefined) {
-      synced[key] = local[key];
-    }
-  }
-
-  return synced;
+  return { ...synced, ...pickHot(local, synced) };
 };
 
 // Routes each key to its area. Pass `syncNow` to also mirror the hot keys into
@@ -84,13 +110,24 @@ export const setStorage = async (options, { syncNow = false } = {}) => {
     }
   }
 
-  const mirrored = syncNow ? { ...synced, ...local } : synced;
   const writes = [];
   if (Object.keys(local).length) writes.push(chrome.storage.local.set(local));
-  if (Object.keys(mirrored).length)
-    writes.push(chrome.storage.sync.set(mirrored));
 
   try {
+    // The mirror must not move the shared counter backwards -- another device
+    // may have written a bigger number for today since we last read. Same
+    // max-wins rule as getStorage, so a rollover (distance 0 on a newer date)
+    // still wins and clears it everywhere.
+    const mirrored = { ...synced };
+    if (syncNow && local.currentDate !== undefined) {
+      Object.assign(
+        mirrored,
+        pickHot(local, await chrome.storage.sync.get(LOCAL_VALUES))
+      );
+    }
+    if (Object.keys(mirrored).length)
+      writes.push(chrome.storage.sync.set(mirrored));
+
     await Promise.all(writes);
   } catch (err) {
     // Over quota, or the extension context went away mid-write.
@@ -120,9 +157,7 @@ const isDateInPast = (dateStr) => {
     return true;
   }
 
-  const firstDate = new Date(dateStr.split("-"));
-  const secondDate = new Date();
-  return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
+  return parseDate(dateStr) < new Date().setHours(0, 0, 0, 0);
 };
 
 export const findTier = (distance) => {

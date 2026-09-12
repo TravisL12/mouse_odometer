@@ -31,19 +31,43 @@
     return `${date.getFullYear()}-${date.getMonth() + 1}-${date.getDate()}`;
   };
 
+  // Mirrors helper.js parseDate -- month/day are unpadded, so the strings do
+  // not sort chronologically.
+  const parseDate = (dateStr) => {
+    const [year, month, day] = dateStr.split("-").map(Number);
+    return new Date(year, month - 1, day).setHours(0, 0, 0, 0);
+  };
+
   // date is `YYYY-mm-dd` string, I miss you TS :'(
   const isDateInPast = (dateStr) => {
     if (!dateStr) {
       return true;
     }
 
-    const firstDate = new Date(dateStr.split("-"));
-    const secondDate = new Date();
-    return firstDate.setHours(0, 0, 0, 0) < secondDate.setHours(0, 0, 0, 0);
+    return parseDate(dateStr) < new Date().setHours(0, 0, 0, 0);
   };
 
-  // Mirrors helper.js getStorage: the hot counter lives in `local`, the rest in
-  // `sync`. See LOCAL_VALUES there for why.
+  // Mirrors helper.js pickHot: newer day wins, then larger distance.
+  const pickHot = (a, b) => {
+    const pick = ({ currentDate, currentDistance }) => ({
+      currentDate,
+      currentDistance: currentDistance || 0,
+    });
+
+    if (a.currentDate === undefined) return pick(b);
+    if (b.currentDate === undefined) return pick(a);
+    if (a.currentDate !== b.currentDate) {
+      return parseDate(b.currentDate) > parseDate(a.currentDate)
+        ? pick(b)
+        : pick(a);
+    }
+    return (b.currentDistance || 0) > (a.currentDistance || 0)
+      ? pick(b)
+      : pick(a);
+  };
+
+  // Mirrors helper.js getStorage: the hot counter lives in `local` and is
+  // mirrored into `sync`, so merge the two. See LOCAL_VALUES there for why.
   const getStorage = async () => {
     const [synced, local] = await Promise.all([
       chrome.storage.sync.get([
@@ -54,13 +78,7 @@
       chrome.storage.local.get(HOT_VALUES),
     ]);
 
-    for (const key of HOT_VALUES) {
-      if (local[key] !== undefined) {
-        synced[key] = local[key];
-      }
-    }
-
-    return synced;
+    return { ...synced, ...pickHot(local, synced) };
   };
 
   class MouseOdometer {

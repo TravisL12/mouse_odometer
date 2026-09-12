@@ -10,7 +10,10 @@ import {
 // the currentDistance for the day and everything is dependent on that value.
 
 // How often the hot counter is mirrored from storage.local into storage.sync.
-const SYNC_MIRROR_INTERVAL = 60000;
+// This is a per-service-worker throttle, not per-tab, so the write rate is
+// capped at ~12/min regardless of how many tabs are reporting -- well under the
+// sync quota of 120/min.
+const SYNC_MIRROR_INTERVAL = 5000;
 
 let lastSyncMirror = 0;
 let lastIconPath = null;
