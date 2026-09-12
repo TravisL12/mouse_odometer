@@ -1,6 +1,6 @@
 {
   "name": "Mouse Odometer",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "manifest_version": 3,
   "description": "Mouse tracker for your cursor: see how far it travels each day in pixels, miles, or trips to the moon. No data collected.",
   "background": {
